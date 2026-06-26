@@ -136,9 +136,11 @@
     .dia-badge { font-size: 0.55rem; background: var(--accent); color: white; border-radius: 4px; padding: 0 3px; line-height: 1.4; font-weight: 700; }
 
     /* LOOKS DEL DÍA en modal */
-    .looks-del-dia { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-    .look-dia-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
-    .look-dia-nombre { font-weight: 500; }
+    .looks-del-dia { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .look-dia-card { background: var(--bg); border-radius: 10px; padding: 12px 14px; border-left: 3px solid var(--sage); }
+    .look-dia-card-header { display: flex; align-items: center; gap: 8px; }
+    .look-dia-num { background: var(--sage); color: var(--white); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+    .look-dia-nombre { font-weight: 600; font-size: 0.85rem; flex: 1; }
     .add-look-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
     .add-look-row select { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; background: var(--bg); }
 
@@ -458,7 +460,7 @@
 <div class="modal-overlay" id="modal-guardar">
   <div class="modal">
     <h2>Guardar look</h2>
-    <div class="form-group"><label>Nombre del look *</label><input type="text" id="guardar-nombre" placeholder="Ej: Look oficina lunes" /></div>
+    <div class="form-group"><label>Nombre del look <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="text" id="guardar-nombre" placeholder="Se asignará automáticamente si lo dejas vacío" /></div>
     <p style="font-size:0.82rem;font-weight:600;margin-bottom:12px">¿Dónde quieres guardarlo?</p>
     <div class="save-options">
       <div class="save-option selected" id="opt-solo" onclick="selectSaveOption('solo')">
@@ -826,11 +828,26 @@ function selectSaveOption(opt) {
   document.getElementById('date-picker-section').classList.toggle('show', opt === 'calendario');
 }
 
+function nombreAutomatico(fecha, posicion) {
+  if (!fecha) return `Look ${posicion}`;
+  const d = new Date(fecha + 'T00:00:00');
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${d.getDate()} ${meses[d.getMonth()]} · ${posicion}`;
+}
+
 async function confirmarGuardarLook() {
-  const nombre = document.getElementById('guardar-nombre').value.trim();
-  if (!nombre) { showToast('Escribe un nombre para el look', 'error'); return; }
   if (saveOption === 'calendario' && !document.getElementById('guardar-fecha').value) {
     showToast('Selecciona una fecha', 'error'); return;
+  }
+  const fecha = saveOption === 'calendario' ? document.getElementById('guardar-fecha').value : null;
+  let nombre = document.getElementById('guardar-nombre').value.trim();
+  if (!nombre) {
+    if (fecha) {
+      const existentes = (calendario[fecha] || []).length;
+      nombre = nombreAutomatico(fecha, existentes + 1);
+    } else {
+      nombre = `Look ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}`;
+    }
   }
   const contextos = [...new Set(lookPendienteGuardar.flatMap(p => p.contextos || []))];
   const { data, error } = await sb.from('looks').insert([{
@@ -839,12 +856,11 @@ async function confirmarGuardarLook() {
     contextos
   }]).select().single();
   if (error) { showToast('Error guardando look', 'error'); return; }
-  if (saveOption === 'calendario') {
-    const fecha = document.getElementById('guardar-fecha').value;
+  if (fecha) {
     await sb.from('calendario').insert([{ fecha, look_id: data.id }]);
-    showToast(`Look guardado y asignado al ${fecha} ✓`, 'success');
+    showToast(`Look guardado como "${nombre}" ✓`, 'success');
   } else {
-    showToast('Look guardado en la biblioteca ✓', 'success');
+    showToast(`Look "${nombre}" guardado en biblioteca ✓`, 'success');
   }
   closeModal('modal-guardar');
   lookPendienteGuardar = null; limpiarLookBuilder();
@@ -964,21 +980,24 @@ function abrirModalCalendario(fecha) {
 }
 
 function renderLooksDelDia(fecha) {
-  const entradas = calendario[fecha] || [];
+  const entradas = (calendario[fecha] || []).slice(0, 3);
   const container = document.getElementById('looks-del-dia-list');
   if (!entradas.length) {
     container.innerHTML = '<p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Sin looks asignados aún.</p>';
     return;
   }
-  container.innerHTML = entradas.map(e => {
-    const nombre = getLookNombre(e.look_id);
+  container.innerHTML = entradas.map((e, i) => {
+    const look = allLooks.find(l => l.id === e.look_id);
     const w = checkRepeticion7Dias(e.look_id, fecha);
-    return `<div class="look-dia-row">
-      <div>
-        <div class="look-dia-nombre">${nombre || 'Look eliminado'}</div>
-        ${w ? `<div style="font-size:0.72rem;color:#F57F17;margin-top:2px">⚠️ ${w}</div>` : ''}
+    const prendas = look ? look.prendas.map(p => `<span class="look-prenda-chip" style="font-size:0.72rem">${p.emoji || '👗'} ${p.nombre}</span>`).join('') : '';
+    return `<div class="look-dia-card">
+      <div class="look-dia-card-header">
+        <span class="look-dia-num">${i + 1}</span>
+        <span class="look-dia-nombre">${look ? look.nombre : 'Look eliminado'}</span>
+        <button class="btn btn-danger btn-xs" onclick="quitarLookDelDia(${e.id})">✕</button>
       </div>
-      <button class="btn btn-danger btn-xs" onclick="quitarLookDelDia(${e.id})">✕</button>
+      ${prendas ? `<div class="look-prendas" style="margin-top:8px">${prendas}</div>` : ''}
+      ${w ? `<div style="font-size:0.72rem;color:#F57F17;margin-top:6px">⚠️ ${w}</div>` : ''}
     </div>`;
   }).join('');
 }
