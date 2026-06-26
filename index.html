@@ -127,8 +127,10 @@
     .dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: var(--carbon); position: relative; flex-direction: column; gap: 1px; }
     .dia:hover:not(.vacio) { background: var(--bg); }
     .dia.vacio { cursor: default; }
-    .dia.tiene-look { background: var(--sage); color: var(--white); font-weight: 600; }
-    .dia.hoy { border: 2px solid var(--accent); font-weight: 700; }
+    .dia.tiene-look-1 { background: var(--sage); color: var(--white); font-weight: 600; }
+    .dia.tiene-look-2 { background: var(--accent); color: var(--white); font-weight: 600; }
+    .dia.tiene-look-3 { background: #A0522D; color: var(--white); font-weight: 600; }
+    .dia.hoy { border: 2px solid #4A90D9; font-weight: 700; }
     .dia-badge { font-size: 0.55rem; background: var(--accent); color: white; border-radius: 4px; padding: 0 3px; line-height: 1.4; font-weight: 700; }
 
     /* LOOKS DEL DÍA en modal */
@@ -360,7 +362,7 @@
   <!-- ───── CALENDARIO ───── -->
   <div id="view-calendario" class="view">
     <div class="section-header">
-      <h2 class="section-title">Calendario 2025</h2>
+      <h2 class="section-title">Calendario <span id="cal-año"></span></h2>
     </div>
     <div id="calendario-container" class="calendario-grid">
       <div class="loading"><div class="spinner"></div> Cargando calendario…</div>
@@ -576,6 +578,8 @@ async function loadLooks() {
   allLooks = data || [];
   renderListaLooks();
 }
+
+document.getElementById('cal-año').textContent = new Date().getFullYear();
 
 async function loadCalendario() {
   const { data } = await sb.from('calendario').select('*');
@@ -917,18 +921,22 @@ function renderCalendario() {
   const container = document.getElementById('calendario-container');
   const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const hoy = new Date();
+  const año = hoy.getFullYear();
   container.innerHTML = meses.map((mes, mi) => {
-    const año = 2025, offset = (new Date(año, mi, 1).getDay() + 6) % 7, diasMes = new Date(año, mi + 1, 0).getDate();
+    const offset = (new Date(año, mi, 1).getDay() + 6) % 7;
+    const diasMes = new Date(año, mi + 1, 0).getDate();
     let html = `<div class="mes-card"><div class="mes-nombre">${mes}</div><div class="dias-grid">
       ${['L','M','X','J','V','S','D'].map(d => `<div class="dia-header">${d}</div>`).join('')}
       ${Array(offset).fill('<div class="dia vacio"></div>').join('')}`;
     for (let d = 1; d <= diasMes; d++) {
       const fecha = `${año}-${String(mi+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const entradas = calendario[fecha] || [];
-      const esHoy = hoy.getFullYear()===año && hoy.getMonth()===mi && hoy.getDate()===d;
-      const badge = entradas.length > 1 ? `<span class="dia-badge">${entradas.length}</span>` : '';
+      const esHoy = hoy.getMonth()===mi && hoy.getDate()===d;
+      const n = entradas.length;
+      const lookClass = n >= 3 ? 'tiene-look-3' : n === 2 ? 'tiene-look-2' : n === 1 ? 'tiene-look-1' : '';
+      const badge = n > 1 ? `<span class="dia-badge">${n}</span>` : '';
       const nombres = entradas.map(e => getLookNombre(e.look_id)).filter(Boolean).join(', ');
-      html += `<div class="dia ${entradas.length ? 'tiene-look' : ''} ${esHoy ? 'hoy' : ''}" onclick="abrirModalCalendario('${fecha}')" title="${nombres}">${d}${badge}</div>`;
+      html += `<div class="dia ${lookClass} ${esHoy ? 'hoy' : ''}" onclick="abrirModalCalendario('${fecha}')" title="${nombres}">${d}${badge}</div>`;
     }
     html += '</div></div>';
     return html;
