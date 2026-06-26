@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Armario María</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #F7F4EF;
+      --sage: #8FAF8F;
+      --sage-light: #C5D9C5;
+      --sage-dark: #6B8F6B;
+      --carbon: #1C1C1C;
+      --muted: #6B6B6B;
+      --border: #E0DAD0;
+      --white: #FFFFFF;
+      --accent: #C4956A;
+      --danger: #D4675A;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(28,28,28,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--carbon);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--carbon);
+      color: var(--white);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.5px;
+    }
+
+    header .subtitle {
+      font-size: 0.7rem;
+      color: var(--sage-light);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* NAV TABS */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav::-webkit-scrollbar { display: none; }
+
+    nav button {
+      padding: 14px 24px;
+      border: none;
+      background: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    nav button.active {
+      color: var(--carbon);
+      border-bottom-color: var(--sage);
+    }
+
+    nav button:hover:not(.active) {
+      color: var(--carbon);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* SECTION TITLE */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--carbon);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--sage);
+      color: var(--white);
+    }
+
+    .btn-primary:hover { background: var(--sage-dark); }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--carbon);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--bg); }
+
+    .btn-danger {
+      background: var(--danger);
+      color: var(--white);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+    }
+
+    /* FILTROS */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active {
+      background: var(--sage);
+      color: var(--white);
+      border-color: var(--sage);
+    }
+
+    .filter-separator {
+      width: 1px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    /* GRID PRENDAS */
+    .grid-prendas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .prenda-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .prenda-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(28,28,28,0.12);
+    }
+
+    .prenda-card.selected {
+      border-color: var(--sage);
+    }
+
+    .prenda-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .prenda-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .prenda-info {
+      padding: 10px 12px;
+    }
+
+    .prenda-nombre {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prenda-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: var(--bg);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 500;
+    }
+
+    .tag-estampado { background: #FFF3E0; color: #E65100; }
+    .tag-liso { background: #E8F5E9; color: #2E7D32; }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28,28,28,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+
+    /* FORMS */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--carbon);
+      letter-spacing: 0.3px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      background: var(--bg);
+      color: var(--carbon);
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--sage);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .checkbox-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+
+    .checkbox-chip input { display: none; }
+
+    .checkbox-chip.checked {
+      background: var(--sage);
+      color: var(--white);
+      border-color: var(--sage);
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    /* FILE UPLOAD */
+    .file-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg);
+    }
+
+    .file-upload-area:hover {
+      border-color: var(--sage);
+      background: #F0F5F0;
+    }
+
+    .file-upload-area.has-file {
+      border-color: var(--sage);
+      background: #F0F5F0;
+    }
+
+    .file-upload-area p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .upload-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    /* LOOKS */
+    .looks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .look-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .look-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+
+    .look-prendas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .look-prenda-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 0.78rem;
+    }
+
+    /* PANEL LOOKS BUILDER */
+    .looks-builder {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .looks-builder {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .capas-panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 80px;
+      height: fit-content;
+    }
+
+    .capas-panel h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+    }
+
+    .capa-slot {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .capa-slot.filled {
+      border-color: var(--sage);
+      background: #F0F5F0;
+    }
+
+    .capa-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .warning-estampado {
+      background: #FFF3E0;
+      border: 1px solid #FFB74D;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      color: #E65100;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .warning-estampado.show { display: block; }
+
+    /* CALENDARIO */
+    .calendario-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .calendario-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mes-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .mes-nombre {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      color: var(--carbon);
+    }
+
+    .dias-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .dia-header {
+      font-size: 0.65rem;
+      text-align: center;
+      color: var(--muted);
+      padding: 4px 0;
+      font-weight: 600;
+    }
+
+    .dia {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--carbon);
+    }
+
+    .dia:hover:not(.vacio) {
+      background: var(--bg);
+    }
+
+    .dia.vacio { cursor: default; }
+
+    .dia.tiene-look {
+      background: var(--sage);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .dia.hoy {
+      border: 2px solid var(--accent);
+      font-weight: 700;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--carbon);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      z-index: 300;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+      max-width: 300px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success { background: var(--sage-dark); }
+    .toast.error { background: var(--danger); }
+
+    /* LOADING */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--sage);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      header { padding: 12px 16px; }
+      header h1 { font-size: 1.2rem; }
+      main { padding: 16px 12px; }
+      .grid-prendas { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .modal { padding: 20px 16px; }
+      nav button { padding: 12px 16px; font-size: 0.8rem; }
+    }
+
+    /* DELETE btn on card */
+    .prenda-card-actions {
+      display: flex;
+      gap: 6px;
+      padding: 0 12px 10px;
+    }
+
+    .assign-look-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .assign-look-row select {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      background: var(--bg);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Armario María ✨</h1>
+    <div class="subtitle">Organizador de Outfits</div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showView('armario')">👗 Armario</button>
+  <button onclick="showView('looks')">✨ Looks</button>
+  <button onclick="showView('calendario')">📅 Calendario</button>
+</nav>
+
+<main>
+  <!-- ───── VISTA: ARMARIO ───── -->
+  <div id="view-armario" class="view active">
+    <div class="section-header">
+      <h2 class="section-title">Mi Armario</h2>
+      <button class="btn btn-primary" onclick="openModalPrenda()">+ Añadir Prenda</button>
+    </div>
+
+    <div class="filters" id="filters-armario">
+      <div class="filter-group" id="filter-contexto">
+        <button class="filter-chip active" data-filter="contexto" data-value="all">Todos</button>
+        <button class="filter-chip" data-filter="contexto" data-value="oficina">Oficina</button>
+        <button class="filter-chip" data-filter="contexto" data-value="casual">Casual</button>
+        <button class="filter-chip" data-filter="contexto" data-value="noche">Noche</button>
+        <button class="filter-chip" data-filter="contexto" data-value="fin de semana">Fin de semana</button>
+      </div>
+      <div class="filter-separator"></div>
+      <div class="filter-group" id="filter-temporada">
+        <button class="filter-chip active" data-filter="temporada" data-value="all">Toda temp.</button>
+        <button class="filter-chip" data-filter="temporada" data-value="P/V">P/V</button>
+        <button class="filter-chip" data-filter="temporada" data-value="O/I">O/I</button>
+      </div>
+      <div class="filter-separator"></div>
+      <div class="filter-group" id="filter-patron">
+        <button class="filter-chip active" data-filter="patron" data-value="all">Liso / Est.</button>
+        <button class="filter-chip" data-filter="patron" data-value="liso">Liso</button>
+        <button class="filter-chip" data-filter="patron" data-value="estampado">Estampado</button>
+      </div>
+    </div>
+
+    <div id="grid-prendas" class="grid-prendas">
+      <div class="loading"><div class="spinner"></div> Cargando armario…</div>
+    </div>
+  </div>
+
+  <!-- ───── VISTA: LOOKS ───── -->
+  <div id="view-looks" class="view">
+    <div class="section-header">
+      <h2 class="section-title">Looks Guardados</h2>
+    </div>
+
+    <div class="looks-builder">
+      <div>
+        <div class="section-header">
+          <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem">Combina un look</h3>
+          <button class="btn btn-secondary btn-sm" onclick="limpiarLookBuilder()">Limpiar</button>
+        </div>
+
+        <div class="filters" id="filters-looks">
+          <div class="filter-group">
+            <button class="filter-chip active" data-filter="capa" data-value="all">Todas</button>
+            <button class="filter-chip" data-filter="capa" data-value="chaqueta">Chaquetas</button>
+            <button class="filter-chip" data-filter="capa" data-value="top">Tops</button>
+            <button class="filter-chip" data-filter="capa" data-value="pantalon">Pantalones</button>
+            <button class="filter-chip" data-filter="capa" data-value="falda">Faldas</button>
+            <button class="filter-chip" data-filter="capa" data-value="vestido">Vestidos</button>
+          </div>
+        </div>
+
+        <div id="grid-looks-selector" class="grid-prendas">
+          <div class="loading"><div class="spinner"></div> Cargando prendas…</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="capas-panel">
+          <h3>Tu Look</h3>
+          <div id="capas-container">
+            <span class="capa-label">Capas seleccionadas</span>
+            <div class="capa-slot" id="slot-chaqueta"><span class="muted" style="color:var(--muted);font-size:0.82rem">Chaqueta / Abrigo</span></div>
+            <div class="capa-slot" id="slot-top"><span class="muted" style="color:var(--muted);font-size:0.82rem">Top / Camisa</span></div>
+            <div class="capa-slot" id="slot-pantalon"><span class="muted" style="color:var(--muted);font-size:0.82rem">Pantalón</span></div>
+            <div class="capa-slot" id="slot-falda"><span class="muted" style="color:var(--muted);font-size:0.82rem">Falda</span></div>
+            <div class="capa-slot" id="slot-vestido"><span class="muted" style="color:var(--muted);font-size:0.82rem">Vestido</span></div>
+          </div>
+          <div class="warning-estampado" id="warning-estampado">
+            ⚠️ Regla de estilo: máximo 1 prenda estampada por look.
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn btn-primary" style="width:100%" onclick="guardarLook()">💾 Guardar Look</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px">
+      <div class="section-header">
+        <h3 class="section-title" style="font-size:1.2rem">Looks guardados</h3>
+      </div>
+      <div id="lista-looks" class="looks-grid">
+        <div class="loading"><div class="spinner"></div> Cargando looks…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── VISTA: CALENDARIO ───── -->
+  <div id="view-calendario" class="view">
+    <div class="section-header">
+      <h2 class="section-title">Calendario 2025</h2>
+    </div>
+    <div id="calendario-container" class="calendario-grid">
+      <div class="loading"><div class="spinner"></div> Cargando calendario…</div>
+    </div>
+  </div>
+</main>
+
+<!-- ───── MODAL: AÑADIR PRENDA ───── -->
+<div class="modal-overlay" id="modal-prenda">
+  <div class="modal">
+    <h2>Añadir Prenda</h2>
+    <form id="form-prenda" onsubmit="submitPrenda(event)">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" />
+      </div>
+      <div class="form-group">
+        <label>Categoría *</label>
+        <select id="prenda-categoria" required>
+          <option value="">Selecciona…</option>
+          <option value="chaqueta">Chaqueta / Abrigo</option>
+          <option value="top">Top / Camisa / Camiseta</option>
+          <option value="pantalon">Pantalón</option>
+          <option value="falda">Falda</option>
+          <option value="vestido">Vestido</option>
+          <option value="accesorio">Accesorio</option>
+          <option value="zapatos">Zapatos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Contextos *</label>
+        <div class="checkbox-group" id="prenda-contextos">
+          <label class="checkbox-chip"><input type="checkbox" value="oficina"> Oficina</label>
+          <label class="checkbox-chip"><input type="checkbox" value="casual"> Casual</label>
+          <label class="checkbox-chip"><input type="checkbox" value="noche"> Noche</label>
+          <label class="checkbox-chip"><input type="checkbox" value="fin de semana"> Fin de semana</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Temporada *</label>
+        <select id="prenda-temporada" required>
+          <option value="">Selecciona…</option>
+          <option value="P/V">Primavera / Verano</option>
+          <option value="O/I">Otoño / Invierno</option>
+          <option value="todo año">Todo el año</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Color dominante *</label>
+        <input type="text" id="prenda-color" required placeholder="Ej: beige, negro, azul marino" />
+      </div>
+      <div class="form-group">
+        <label>Patrón *</label>
+        <select id="prenda-patron" required>
+          <option value="">Selecciona…</option>
+          <option value="liso">Liso</option>
+          <option value="estampado">Estampado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Emoji (opcional)</label>
+        <input type="text" id="prenda-emoji" placeholder="Ej: 👗" maxlength="2" />
+      </div>
+      <div class="form-group">
+        <label>Foto (opcional)</label>
+        <div class="file-upload-area" id="upload-area" onclick="document.getElementById('prenda-imagen').click()">
+          <div>📷</div>
+          <p>Haz clic para subir una foto</p>
+          <img id="upload-preview" class="upload-preview" style="display:none" />
+        </div>
+        <input type="file" id="prenda-imagen" accept="image/*" style="display:none" onchange="previewImage(this)" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-prenda')">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit-prenda">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ───── MODAL: ASIGNAR LOOK A DÍA ───── -->
+<div class="modal-overlay" id="modal-calendario">
+  <div class="modal">
+    <h2 id="modal-cal-titulo">Asignar look</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Elige el look para este día:</p>
+    <div class="assign-look-row">
+      <select id="cal-look-select"></select>
+      <button class="btn btn-primary btn-sm" onclick="asignarLookDia()">Asignar</button>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn btn-secondary btn-sm" onclick="quitarLookDia()">Quitar look</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-calendario')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ───── TOAST ───── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── SUPABASE INIT ───────────────────────────────────────────────────────────
+const { createClient } = supabase;
+const sb = createClient(
+  'https://wngfxbycgyowevfmcqii.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZ2Z4YnljZ3lvd2V2Zm1jcWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODY1ODgsImV4cCI6MjA5ODA2MjU4OH0.VOcXSU8uLR0zMeXQLjkXrtSYfcJTGEvtrhQsybv4a1Y'
+);
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let allPrendas = [];
+let allLooks = [];
+let calendario = {}; // fecha -> look_id
+let lookBuilder = {}; // categoria -> prenda
+let activeView = 'armario';
+let calFechaSeleccionada = null;
+
+const FILTROS = {
+  armario: { contexto: 'all', temporada: 'all', patron: 'all' },
+  looks: { capa: 'all' }
+};
+
+// ─── DATOS SEMILLA ────────────────────────────────────────────────────────────
+const SEMILLA = [
+  { nombre: 'Blazer beige', categoria: 'chaqueta', contextos: ['oficina','casual'], temporada: 'todo año', color: 'beige', patron: 'liso', emoji: '🧥' },
+  { nombre: 'Blazer negro oversize', categoria: 'chaqueta', contextos: ['oficina','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '🧥' },
+  { nombre: 'Trenca camel', categoria: 'chaqueta', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '🧥' },
+  { nombre: 'Camisa blanca Oxford', categoria: 'top', contextos: ['oficina','casual'], temporada: 'todo año', color: 'blanco', patron: 'liso', emoji: '👔' },
+  { nombre: 'Top seda negro', categoria: 'top', contextos: ['noche','oficina'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👚' },
+  { nombre: 'Camiseta rayas azules', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'azul', patron: 'estampado', emoji: '👕' },
+  { nombre: 'Blusa floral estampada', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌸' },
+  { nombre: 'Pantalón negro sastre', categoria: 'pantalon', contextos: ['oficina','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👖' },
+  { nombre: 'Pantalón camel ancho', categoria: 'pantalon', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '👖' },
+  { nombre: 'Jeans azul oscuro', categoria: 'pantalon', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'azul', patron: 'liso', emoji: '👖' },
+  { nombre: 'Falda midi beige', categoria: 'falda', contextos: ['oficina','casual'], temporada: 'P/V', color: 'beige', patron: 'liso', emoji: '👗' },
+  { nombre: 'Falda plisada verde', categoria: 'falda', contextos: ['casual','noche'], temporada: 'P/V', color: 'verde', patron: 'liso', emoji: '👗' },
+  { nombre: 'Vestido negro clásico', categoria: 'vestido', contextos: ['noche','oficina'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👗' },
+  { nombre: 'Vestido floral verano', categoria: 'vestido', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌺' },
+];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  setupFilterListeners();
+  setupCheckboxChips();
+  await seedIfEmpty();
+  await Promise.all([loadPrendas(), loadLooks(), loadCalendario()]);
+}
+
+async function seedIfEmpty() {
+  const { count } = await sb.from('prendas').select('*', { count: 'exact', head: true });
+  if (count === 0) {
+    await sb.from('prendas').insert(SEMILLA);
+  }
+}
+
+// ─── LOAD DATA ────────────────────────────────────────────────────────────────
+async function loadPrendas() {
+  const { data, error } = await sb.from('prendas').select('*').order('created_at', { ascending: false });
+  if (error) { showToast('Error cargando prendas', 'error'); return; }
+  allPrendas = data || [];
+  renderArmario();
+  renderLooksSelector();
+}
+
+async function loadLooks() {
+  const { data, error } = await sb.from('looks').select('*').order('created_at', { ascending: false });
+  if (error) return;
+  allLooks = data || [];
+  renderListaLooks();
+}
+
+async function loadCalendario() {
+  const { data, error } = await sb.from('calendario').select('*');
+  if (error) return;
+  calendario = {};
+  (data || []).forEach(r => { calendario[r.fecha] = { look_id: r.look_id, id: r.id }; });
+  renderCalendario();
+}
+
+// ─── VIEWS ────────────────────────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  activeView = name;
+}
+
+// ─── FILTERS ─────────────────────────────────────────────────────────────────
+function setupFilterListeners() {
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const filter = this.dataset.filter;
+      const value = this.dataset.value;
+      const group = this.closest('.filter-group');
+      group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+
+      if (activeView === 'armario') {
+        FILTROS.armario[filter] = value;
+        renderArmario();
+      } else if (activeView === 'looks') {
+        FILTROS.looks[filter] = value;
+        renderLooksSelector();
+      }
+    });
+  });
+}
+
+function filtrarPrendas(prendas, filtros) {
+  return prendas.filter(p => {
+    if (filtros.contexto && filtros.contexto !== 'all' && !p.contextos.includes(filtros.contexto)) return false;
+    if (filtros.temporada && filtros.temporada !== 'all' && p.temporada !== filtros.temporada && p.temporada !== 'todo año') return false;
+    if (filtros.patron && filtros.patron !== 'all' && p.patron !== filtros.patron) return false;
+    if (filtros.capa && filtros.capa !== 'all' && p.categoria !== filtros.capa) return false;
+    return true;
+  });
+}
+
+// ─── RENDER ARMARIO ──────────────────────────────────────────────────────────
+function renderArmario() {
+  const container = document.getElementById('grid-prendas');
+  const filtered = filtrarPrendas(allPrendas, FILTROS.armario);
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">👗</div><p>No hay prendas con estos filtros.</p></div>';
+    return;
+  }
+  container.innerHTML = filtered.map(p => prendaCardHTML(p, false)).join('');
+}
+
+function prendaCardHTML(p, selectable) {
+  const selected = lookBuilder[p.categoria]?.id === p.id;
+  const imgHTML = p.imagen_url
+    ? `<div class="prenda-img"><img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy" /></div>`
+    : `<div class="prenda-img">${p.emoji || '👗'}</div>`;
+
+  const selectBtn = selectable
+    ? `<button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button>`
+    : '';
+
+  return `
+    <div class="prenda-card ${selected ? 'selected' : ''}" id="card-${p.id}">
+      ${imgHTML}
+      <div class="prenda-info">
+        <div class="prenda-nombre">${p.nombre}</div>
+        <div class="prenda-meta">
+          <span class="tag">${p.categoria}</span>
+          <span class="tag tag-${p.patron}">${p.patron}</span>
+        </div>
+        <div class="prenda-meta" style="margin-top:4px">
+          <span class="tag">${p.temporada}</span>
+          <span class="tag">${p.color}</span>
+        </div>
+      </div>
+      ${selectable ? `<div class="prenda-card-actions">${selectBtn}</div>` : `
+      <div class="prenda-card-actions">
+        <button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button>
+      </div>`}
+    </div>`;
+}
+
+// ─── LOOK BUILDER ─────────────────────────────────────────────────────────────
+function renderLooksSelector() {
+  const container = document.getElementById('grid-looks-selector');
+  const filtered = filtrarPrendas(allPrendas, FILTROS.looks);
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">👗</div><p>Sin prendas en esta categoría.</p></div>';
+    return;
+  }
+  container.innerHTML = filtered.map(p => prendaCardHTML(p, true)).join('');
+}
+
+function toggleLookBuilder(id) {
+  const prenda = allPrendas.find(p => p.id === id);
+  if (!prenda) return;
+  const cat = prenda.categoria;
+
+  if (lookBuilder[cat]?.id === id) {
+    delete lookBuilder[cat];
+  } else {
+    lookBuilder[cat] = prenda;
+  }
+
+  updateCapasPanel();
+  renderLooksSelector();
+}
+
+function updateCapasPanel() {
+  const capas = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido'];
+  capas.forEach(cat => {
+    const slot = document.getElementById('slot-' + cat);
+    const prenda = lookBuilder[cat];
+    if (prenda) {
+      slot.classList.add('filled');
+      slot.innerHTML = `<span style="font-size:0.85rem;font-weight:600">${prenda.emoji || '👗'} ${prenda.nombre}</span>
+        <button class="btn btn-secondary btn-sm" onclick="toggleLookBuilder(${prenda.id})">✕</button>`;
+    } else {
+      slot.classList.remove('filled');
+      const labels = { chaqueta: 'Chaqueta / Abrigo', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido' };
+      slot.innerHTML = `<span style="color:var(--muted);font-size:0.82rem">${labels[cat]}</span>`;
+    }
+  });
+
+  const estampados = Object.values(lookBuilder).filter(p => p.patron === 'estampado').length;
+  document.getElementById('warning-estampado').classList.toggle('show', estampados > 1);
+}
+
+function limpiarLookBuilder() {
+  lookBuilder = {};
+  updateCapasPanel();
+  renderLooksSelector();
+}
+
+async function guardarLook() {
+  const prendas = Object.values(lookBuilder);
+  if (!prendas.length) { showToast('Selecciona al menos una prenda', 'error'); return; }
+
+  const estampados = prendas.filter(p => p.patron === 'estampado').length;
+  if (estampados > 1) {
+    showToast('Máximo 1 prenda estampada por look', 'error'); return;
+  }
+
+  const nombre = prompt('Nombre para este look:');
+  if (!nombre) return;
+
+  const contextos = [...new Set(prendas.flatMap(p => p.contextos))];
+  const { error } = await sb.from('looks').insert([{
+    nombre,
+    prendas: prendas.map(p => ({ id: p.id, nombre: p.nombre, emoji: p.emoji, categoria: p.categoria })),
+    contextos
+  }]);
+
+  if (error) { showToast('Error guardando look', 'error'); return; }
+
+  showToast('Look guardado ✓', 'success');
+  limpiarLookBuilder();
+  await loadLooks();
+}
+
+// ─── RENDER LOOKS ─────────────────────────────────────────────────────────────
+function renderListaLooks() {
+  const container = document.getElementById('lista-looks');
+  if (!allLooks.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">✨</div><p>Aún no hay looks guardados.</p></div>';
+    return;
+  }
+  container.innerHTML = allLooks.map(l => `
+    <div class="look-card">
+      <h3>${l.nombre}</h3>
+      <div class="look-prendas">
+        ${l.prendas.map(p => `<span class="look-prenda-chip">${p.emoji || '👗'} ${p.nombre}</span>`).join('')}
+      </div>
+      ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted)">${l.contextos.join(' · ')}</div>` : ''}
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="eliminarLook(${l.id})">🗑 Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function eliminarLook(id) {
+  if (!confirm('¿Eliminar este look?')) return;
+  await sb.from('looks').delete().eq('id', id);
+  showToast('Look eliminado');
+  await loadLooks();
+}
+
+// ─── CALENDARIO ───────────────────────────────────────────────────────────────
+function renderCalendario() {
+  const container = document.getElementById('calendario-container');
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const hoy = new Date();
+
+  container.innerHTML = meses.map((mes, mi) => {
+    const año = 2025;
+    const primerDia = new Date(año, mi, 1).getDay();
+    const diasMes = new Date(año, mi + 1, 0).getDate();
+    const offset = (primerDia + 6) % 7; // lunes primero
+
+    let html = `<div class="mes-card">
+      <div class="mes-nombre">${mes} ${año}</div>
+      <div class="dias-grid">
+        ${['L','M','X','J','V','S','D'].map(d => `<div class="dia-header">${d}</div>`).join('')}
+        ${Array(offset).fill('<div class="dia vacio"></div>').join('')}`;
+
+    for (let d = 1; d <= diasMes; d++) {
+      const fecha = `${año}-${String(mi+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const tieneL = calendario[fecha];
+      const esHoy = hoy.getFullYear()===año && hoy.getMonth()===mi && hoy.getDate()===d;
+      html += `<div class="dia ${tieneL?'tiene-look':''} ${esHoy?'hoy':''}" onclick="abrirModalCalendario('${fecha}')" title="${tieneL ? getLookNombre(tieneL.look_id) : fecha}">${d}</div>`;
+    }
+
+    html += '</div></div>';
+    return html;
+  }).join('');
+}
+
+function getLookNombre(id) {
+  const look = allLooks.find(l => l.id === id);
+  return look ? look.nombre : '';
+}
+
+function abrirModalCalendario(fecha) {
+  calFechaSeleccionada = fecha;
+  document.getElementById('modal-cal-titulo').textContent = `Look para ${fecha}`;
+
+  const select = document.getElementById('cal-look-select');
+  const currentLookId = calendario[fecha]?.look_id;
+  select.innerHTML = '<option value="">Sin look</option>' +
+    allLooks.map(l => `<option value="${l.id}" ${l.id===currentLookId?'selected':''}>${l.nombre}</option>`).join('');
+
+  openModal('modal-calendario');
+}
+
+async function asignarLookDia() {
+  const lookId = document.getElementById('cal-look-select').value;
+  const fecha = calFechaSeleccionada;
+  if (!fecha) return;
+
+  const existing = calendario[fecha];
+  if (existing) {
+    await sb.from('calendario').update({ look_id: lookId || null }).eq('id', existing.id);
+  } else {
+    if (!lookId) { closeModal('modal-calendario'); return; }
+    await sb.from('calendario').insert([{ fecha, look_id: lookId }]);
+  }
+
+  showToast('Calendario actualizado ✓', 'success');
+  closeModal('modal-calendario');
+  await loadCalendario();
+}
+
+async function quitarLookDia() {
+  const fecha = calFechaSeleccionada;
+  const existing = calendario[fecha];
+  if (existing) {
+    await sb.from('calendario').delete().eq('id', existing.id);
+    showToast('Look quitado');
+    closeModal('modal-calendario');
+    await loadCalendario();
+  } else {
+    closeModal('modal-calendario');
+  }
+}
+
+// ─── MODAL PRENDA ─────────────────────────────────────────────────────────────
+function openModalPrenda() {
+  document.getElementById('form-prenda').reset();
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-area').classList.remove('has-file');
+  document.querySelectorAll('.checkbox-chip').forEach(c => c.classList.remove('checked'));
+  openModal('modal-prenda');
+}
+
+function setupCheckboxChips() {
+  document.querySelectorAll('.checkbox-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      this.classList.toggle('checked');
+      this.querySelector('input').checked = this.classList.contains('checked');
+    });
+  });
+}
+
+function previewImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('upload-preview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  document.getElementById('upload-area').classList.add('has-file');
+}
+
+async function submitPrenda(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-prenda');
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  const contextos = [...document.querySelectorAll('#prenda-contextos input:checked')].map(i => i.value);
+  if (!contextos.length) {
+    showToast('Selecciona al menos un contexto', 'error');
+    btn.disabled = false; btn.textContent = 'Guardar'; return;
+  }
+
+  let imagen_url = null;
+  const fileInput = document.getElementById('prenda-imagen');
+  if (fileInput.files[0]) {
+    const file = fileInput.files[0];
+    const ext = file.name.split('.').pop();
+    const path = `${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage.from('prendas').upload(path, file, { upsert: true });
+    if (!upErr) {
+      const { data } = sb.storage.from('prendas').getPublicUrl(path);
+      imagen_url = data.publicUrl;
+    }
+  }
+
+  const prenda = {
+    nombre: document.getElementById('prenda-nombre').value,
+    categoria: document.getElementById('prenda-categoria').value,
+    contextos,
+    temporada: document.getElementById('prenda-temporada').value,
+    color: document.getElementById('prenda-color').value,
+    patron: document.getElementById('prenda-patron').value,
+    emoji: document.getElementById('prenda-emoji').value || null,
+    imagen_url
+  };
+
+  const { error } = await sb.from('prendas').insert([prenda]);
+  btn.disabled = false; btn.textContent = 'Guardar';
+
+  if (error) { showToast('Error al guardar', 'error'); return; }
+
+  showToast('Prenda añadida ✓', 'success');
+  closeModal('modal-prenda');
+  await loadPrendas();
+}
+
+async function eliminarPrenda(id) {
+  if (!confirm('¿Eliminar esta prenda?')) return;
+  await sb.from('prendas').delete().eq('id', id);
+  showToast('Prenda eliminada');
+  await loadPrendas();
+}
+
+// ─── MODAL HELPERS ────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── START ────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
