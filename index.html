@@ -8,62 +8,32 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #F7F4EF;
-      --sage: #8FAF8F;
-      --sage-light: #C5D9C5;
-      --sage-dark: #6B8F6B;
-      --carbon: #1C1C1C;
-      --muted: #6B6B6B;
-      --border: #E0DAD0;
-      --white: #FFFFFF;
-      --accent: #C4956A;
-      --danger: #D4675A;
-      --radius: 12px;
+      --bg: #F7F4EF; --sage: #8FAF8F; --sage-light: #C5D9C5; --sage-dark: #6B8F6B;
+      --carbon: #1C1C1C; --muted: #6B6B6B; --border: #E0DAD0; --white: #FFFFFF;
+      --accent: #C4956A; --danger: #D4675A; --radius: 12px;
       --shadow: 0 2px 12px rgba(28,28,28,0.08);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--carbon); min-height: 100vh; }
 
-    header {
-      background: var(--carbon); color: var(--white); padding: 16px 24px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
+    header { background: var(--carbon); color: var(--white); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     header h1 { font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: 0.5px; }
     header .subtitle { font-size: 0.7rem; color: var(--sage-light); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
 
-    nav {
-      background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; overflow-x: auto; scrollbar-width: none;
-    }
+    nav { background: var(--white); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; scrollbar-width: none; }
     nav::-webkit-scrollbar { display: none; }
-    nav button {
-      padding: 14px 24px; border: none; background: none;
-      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
-      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
-      white-space: nowrap; transition: all 0.2s; letter-spacing: 0.5px;
-    }
+    nav button { padding: 14px 24px; border: none; background: none; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
     nav button.active { color: var(--carbon); border-bottom-color: var(--sage); }
     nav button:hover:not(.active) { color: var(--carbon); }
 
     main { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
     .view { display: none; }
     .view.active { display: block; }
-
-    .section-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--carbon); }
 
     /* BUTTONS */
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 9px 18px; border-radius: 8px; font-family: 'Inter', sans-serif;
-      font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
     .btn-primary { background: var(--sage); color: var(--white); }
     .btn-primary:hover { background: var(--sage-dark); }
     .btn-secondary { background: var(--white); color: var(--carbon); border: 1px solid var(--border); }
@@ -79,28 +49,17 @@
     /* FILTERS */
     .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
     .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
-    .filter-chip {
-      padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
-      background: var(--white); font-size: 0.78rem; font-weight: 500;
-      cursor: pointer; color: var(--muted); transition: all 0.2s;
-    }
+    .filter-chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--white); font-size: 0.78rem; font-weight: 500; cursor: pointer; color: var(--muted); transition: all 0.2s; }
     .filter-chip.active { background: var(--sage); color: var(--white); border-color: var(--sage); }
     .filter-chip:hover:not(.active) { color: var(--carbon); }
     .filter-separator { width: 1px; background: var(--border); margin: 0 4px; }
 
-    /* GRID PRENDAS */
+    /* PRENDAS */
     .grid-prendas { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
-    .prenda-card {
-      background: var(--white); border-radius: var(--radius); overflow: hidden;
-      box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s;
-      border: 2px solid transparent;
-    }
+    .prenda-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent; }
     .prenda-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(28,28,28,0.12); }
     .prenda-card.selected { border-color: var(--sage); }
-    .prenda-img {
-      width: 100%; aspect-ratio: 3/4; object-fit: cover; background: var(--bg);
-      display: flex; align-items: center; justify-content: center; font-size: 3rem;
-    }
+    .prenda-img { width: 100%; aspect-ratio: 3/4; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 3rem; overflow: hidden; }
     .prenda-img img { width: 100%; height: 100%; object-fit: cover; }
     .prenda-info { padding: 10px 12px; }
     .prenda-nombre { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -111,96 +70,48 @@
     .prenda-card-actions { display: flex; gap: 6px; padding: 0 12px 10px; }
 
     /* MODO TOGGLE */
-    .mode-toggle {
-      display: flex; background: var(--bg); border-radius: 10px;
-      border: 1px solid var(--border); padding: 4px; gap: 4px; margin-bottom: 24px;
-    }
-    .mode-btn {
-      flex: 1; padding: 9px 16px; border: none; border-radius: 7px;
-      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
-      cursor: pointer; transition: all 0.2s; color: var(--muted); background: transparent;
-    }
+    .mode-toggle { display: flex; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); padding: 4px; gap: 4px; margin-bottom: 24px; }
+    .mode-btn { flex: 1; padding: 9px 16px; border: none; border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--muted); background: transparent; }
     .mode-btn.active { background: var(--white); color: var(--carbon); box-shadow: var(--shadow); }
 
-    /* GENERADOR ALEATORIO */
-    .generator-panel {
-      background: var(--white); border-radius: var(--radius); padding: 24px;
-      box-shadow: var(--shadow); margin-bottom: 24px;
-    }
+    /* GENERADOR */
+    .generator-panel { background: var(--white); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; }
     .generator-panel h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 16px; }
-    .generator-filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-    .generator-filter-group label {
-      display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px;
-    }
+    .generator-filters { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+    .generator-filter-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; }
     .chips-row { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    /* LOOK CARDS GENERADAS */
     .looks-generados { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .look-generado-card {
-      background: var(--white); border-radius: var(--radius); padding: 20px;
-      box-shadow: var(--shadow); border: 2px solid transparent; transition: border-color 0.2s;
-    }
+    .look-generado-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 2px solid transparent; transition: border-color 0.2s; }
     .look-generado-card:hover { border-color: var(--sage-light); }
-    .look-generado-titulo {
-      font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 14px;
-      color: var(--carbon);
-    }
+    .look-generado-titulo { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 14px; }
     .look-capas { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-    .look-capa-item {
-      display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-      background: var(--bg); border-radius: 8px; font-size: 0.82rem;
-    }
-    .look-capa-item .capa-cat {
-      font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.5px; color: var(--muted); width: 70px; flex-shrink: 0;
-    }
-    .look-capa-item .capa-nombre { font-weight: 500; }
+    .look-capa-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg); border-radius: 8px; font-size: 0.82rem; }
+    .look-capa-item .capa-cat { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); width: 70px; flex-shrink: 0; }
     .look-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     /* BUILDER MANUAL */
     .looks-builder { display: grid; grid-template-columns: 1fr 300px; gap: 24px; }
     @media (max-width: 768px) { .looks-builder { grid-template-columns: 1fr; } }
-    .capas-panel {
-      background: var(--white); border-radius: var(--radius); padding: 20px;
-      box-shadow: var(--shadow); position: sticky; top: 80px; height: fit-content;
-    }
+    .capas-panel { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); position: sticky; top: 80px; height: fit-content; }
     .capas-panel h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 16px; }
-    .capa-slot {
-      border: 1px dashed var(--border); border-radius: 8px; padding: 10px 14px;
-      margin-bottom: 10px; min-height: 52px; display: flex; align-items: center; justify-content: space-between;
-    }
+    .capa-slot { border: 1px dashed var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; min-height: 52px; display: flex; align-items: center; justify-content: space-between; }
     .capa-slot.filled { border-color: var(--sage); background: #F0F5F0; }
     .capa-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 10px; display: block; }
-    .warning-estampado {
-      background: #FFF3E0; border: 1px solid #FFB74D; border-radius: 8px;
-      padding: 10px 14px; font-size: 0.78rem; color: #E65100; margin-top: 12px; display: none;
-    }
-    .warning-estampado.show { display: block; }
+    .warning-box { border-radius: 8px; padding: 10px 14px; font-size: 0.78rem; margin-top: 12px; display: none; }
+    .warning-box.show { display: block; }
+    .warning-estampado { background: #FFF3E0; border: 1px solid #FFB74D; color: #E65100; }
+    .warning-oficina { background: #FFF8E1; border: 1px solid #FFD54F; color: #F57F17; }
 
-    /* BIBLIOTECA DE LOOKS */
+    /* BIBLIOTECA */
     .looks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .look-card {
-      background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
-    }
+    .look-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
     .look-card h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 12px; }
     .look-prendas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-    .look-prenda-chip {
-      display: flex; align-items: center; gap: 5px; padding: 5px 10px;
-      background: var(--bg); border-radius: 8px; font-size: 0.78rem;
-    }
+    .look-prenda-chip { display: flex; align-items: center; gap: 5px; padding: 5px 10px; background: var(--bg); border-radius: 8px; font-size: 0.78rem; }
     .look-card-footer { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-
-    /* BIBLIOTECA POR TEMPORADA */
     .temporada-section { margin-bottom: 36px; }
-    .temporada-header {
-      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-      padding-bottom: 10px; border-bottom: 2px solid var(--border);
-    }
-    .temporada-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
-    }
+    .temporada-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+    .temporada-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
     .temporada-badge.pv { background: #E8F5E9; color: #2E7D32; }
     .temporada-badge.oi { background: #E3F2FD; color: #1565C0; }
     .temporada-badge.all { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
@@ -213,34 +124,50 @@
     .mes-nombre { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 12px; }
     .dias-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
     .dia-header { font-size: 0.65rem; text-align: center; color: var(--muted); padding: 4px 0; font-weight: 600; }
-    .dia {
-      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: var(--carbon);
-    }
+    .dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: var(--carbon); position: relative; flex-direction: column; gap: 1px; }
     .dia:hover:not(.vacio) { background: var(--bg); }
     .dia.vacio { cursor: default; }
     .dia.tiene-look { background: var(--sage); color: var(--white); font-weight: 600; }
     .dia.hoy { border: 2px solid var(--accent); font-weight: 700; }
+    .dia-badge { font-size: 0.55rem; background: var(--accent); color: white; border-radius: 4px; padding: 0 3px; line-height: 1.4; font-weight: 700; }
+
+    /* LOOKS DEL DÍA en modal */
+    .looks-del-dia { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .look-dia-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
+    .look-dia-nombre { font-weight: 500; }
+    .add-look-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+    .add-look-row select { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; background: var(--bg); }
+
+    /* WARNING OFICINA en modal asignar */
+    .warning-asignar { background: #FFF8E1; border: 1px solid #FFD54F; border-radius: 8px; padding: 10px 14px; font-size: 0.78rem; color: #F57F17; margin: 12px 0; display: none; }
+    .warning-asignar.show { display: block; }
+
+    /* MALETA */
+    .maleta-panel { background: var(--white); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-top: 32px; }
+    .maleta-panel h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 8px; }
+    .maleta-panel .desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
+    .maleta-range { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; }
+    .maleta-range .form-group { margin-bottom: 0; flex: 1; min-width: 140px; }
+    .maleta-resultado { margin-top: 24px; }
+    .maleta-categoria { margin-bottom: 20px; }
+    .maleta-cat-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .maleta-cat-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .maleta-items { display: flex; flex-direction: column; gap: 8px; }
+    .maleta-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg); border-radius: 8px; }
+    .maleta-item-img { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; overflow: hidden; }
+    .maleta-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .maleta-item-info { flex: 1; }
+    .maleta-item-nombre { font-weight: 600; font-size: 0.85rem; }
+    .maleta-item-usos { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .maleta-checkbox { width: 18px; height: 18px; accent-color: var(--sage); cursor: pointer; }
 
     /* MODAL */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(28,28,28,0.5);
-      z-index: 200; align-items: center; justify-content: center; padding: 20px;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(28,28,28,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--white); border-radius: 16px; padding: 28px;
-      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
+    .modal { background: var(--white); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
     .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 20px; }
-
-    /* SAVE OPTIONS */
     .save-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .save-option {
-      border: 2px solid var(--border); border-radius: 12px; padding: 20px 16px;
-      cursor: pointer; transition: all 0.2s; text-align: center; background: var(--bg);
-    }
+    .save-option { border: 2px solid var(--border); border-radius: 12px; padding: 20px 16px; cursor: pointer; transition: all 0.2s; text-align: center; background: var(--bg); }
     .save-option:hover { border-color: var(--sage); background: #F0F5F0; }
     .save-option.selected { border-color: var(--sage); background: #F0F5F0; }
     .save-option .icon { font-size: 2rem; margin-bottom: 8px; }
@@ -249,75 +176,45 @@
     .date-picker-section { margin-top: 16px; display: none; }
     .date-picker-section.show { display: block; }
     .date-picker-section label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
-    .date-picker-section input[type="date"] {
-      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
-      font-family: 'Inter', sans-serif; font-size: 0.88rem; background: var(--bg);
-    }
-
-    /* FORMS */
+    .date-picker-section input[type="date"] { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.88rem; background: var(--bg); }
     .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; color: var(--carbon); letter-spacing: 0.3px; }
-    .form-group input, .form-group select {
-      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
-      font-family: 'Inter', sans-serif; font-size: 0.88rem; background: var(--bg); color: var(--carbon); transition: border-color 0.2s;
-    }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; color: var(--carbon); }
+    .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.88rem; background: var(--bg); color: var(--carbon); transition: border-color 0.2s; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--sage); }
     .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .checkbox-chip {
-      display: flex; align-items: center; gap: 6px; padding: 6px 12px;
-      border-radius: 8px; border: 1px solid var(--border); background: var(--white);
-      cursor: pointer; font-size: 0.82rem; transition: all 0.2s;
-    }
+    .checkbox-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--white); cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
     .checkbox-chip input { display: none; }
     .checkbox-chip.checked { background: var(--sage); color: var(--white); border-color: var(--sage); }
     .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-
-    /* FILE UPLOAD */
-    .file-upload-area {
-      border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px;
-      text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg);
-    }
-    .file-upload-area:hover { border-color: var(--sage); background: #F0F5F0; }
-    .file-upload-area.has-file { border-color: var(--sage); background: #F0F5F0; }
+    .file-upload-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); }
+    .file-upload-area:hover, .file-upload-area.has-file { border-color: var(--sage); background: #F0F5F0; }
     .file-upload-area p { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
     .upload-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-top: 10px; }
 
-    /* ASSIGN LOOK ROW */
-    .assign-look-row { display: flex; align-items: center; gap: 8px; }
-    .assign-look-row select { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.82rem; background: var(--bg); }
-
     /* TOAST */
-    .toast {
-      position: fixed; bottom: 24px; right: 24px; background: var(--carbon);
-      color: var(--white); padding: 12px 20px; border-radius: 10px; font-size: 0.85rem;
-      font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0;
-      transition: all 0.3s; max-width: 300px;
-    }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--carbon); color: var(--white); padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s; max-width: 320px; }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.success { background: var(--sage-dark); }
     .toast.error { background: var(--danger); }
 
-    /* LOADING / EMPTY */
     .loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--muted); font-size: 0.9rem; gap: 10px; }
     .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--sage); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
     .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
     .empty-state p { font-size: 0.9rem; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
-    /* RESPONSIVE */
     @media (max-width: 480px) {
       header { padding: 12px 16px; }
-      header h1 { font-size: 1.2rem; }
       main { padding: 16px 12px; }
       .grid-prendas { grid-template-columns: repeat(2, 1fr); gap: 10px; }
       .modal { padding: 20px 16px; }
       nav button { padding: 12px 16px; font-size: 0.8rem; }
       .save-options { grid-template-columns: 1fr; }
       .looks-generados { grid-template-columns: 1fr; }
+      .maleta-range { flex-direction: column; }
     }
-
-    .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
   </style>
 </head>
 <body>
@@ -337,14 +234,14 @@
 
 <main>
 
-  <!-- ───── VISTA: ARMARIO ───── -->
+  <!-- ───── ARMARIO ───── -->
   <div id="view-armario" class="view active">
     <div class="section-header">
       <h2 class="section-title">Mi Armario</h2>
       <button class="btn btn-primary" onclick="openModalPrenda()">+ Añadir Prenda</button>
     </div>
     <div class="filters">
-      <div class="filter-group" id="filter-contexto">
+      <div class="filter-group">
         <button class="filter-chip active" data-filter="contexto" data-view="armario" data-value="all">Todos</button>
         <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="oficina">Oficina</button>
         <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="casual">Casual</button>
@@ -352,13 +249,13 @@
         <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="fin de semana">Fin de semana</button>
       </div>
       <div class="filter-separator"></div>
-      <div class="filter-group" id="filter-temporada">
+      <div class="filter-group">
         <button class="filter-chip active" data-filter="temporada" data-view="armario" data-value="all">Toda temp.</button>
         <button class="filter-chip" data-filter="temporada" data-view="armario" data-value="P/V">P/V</button>
         <button class="filter-chip" data-filter="temporada" data-view="armario" data-value="O/I">O/I</button>
       </div>
       <div class="filter-separator"></div>
-      <div class="filter-group" id="filter-patron">
+      <div class="filter-group">
         <button class="filter-chip active" data-filter="patron" data-view="armario" data-value="all">Liso / Est.</button>
         <button class="filter-chip" data-filter="patron" data-view="armario" data-value="liso">Liso</button>
         <button class="filter-chip" data-filter="patron" data-view="armario" data-value="estampado">Estampado</button>
@@ -369,10 +266,8 @@
     </div>
   </div>
 
-  <!-- ───── VISTA: LOOKS ───── -->
+  <!-- ───── LOOKS ───── -->
   <div id="view-looks" class="view">
-
-    <!-- TOGGLE MODO -->
     <div class="section-header">
       <h2 class="section-title">Looks</h2>
     </div>
@@ -381,7 +276,7 @@
       <button class="mode-btn" id="btn-modo-manual" onclick="setModo('manual')">✏️ Modo Manual</button>
     </div>
 
-    <!-- MODO ALEATORIO -->
+    <!-- ALEATORIO -->
     <div id="modo-aleatorio">
       <div class="generator-panel">
         <h3>Genera looks automáticamente</h3>
@@ -413,7 +308,7 @@
       <div id="looks-generados-container"></div>
     </div>
 
-    <!-- MODO MANUAL -->
+    <!-- MANUAL -->
     <div id="modo-manual" style="display:none">
       <div class="looks-builder">
         <div>
@@ -431,9 +326,7 @@
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="vestido">Vestidos</button>
             </div>
           </div>
-          <div id="grid-manual-selector" class="grid-prendas">
-            <div class="loading"><div class="spinner"></div> Cargando…</div>
-          </div>
+          <div id="grid-manual-selector" class="grid-prendas"></div>
         </div>
         <div>
           <div class="capas-panel">
@@ -444,7 +337,7 @@
             <div class="capa-slot" id="slot-pantalon"><span style="color:var(--muted);font-size:0.82rem">Pantalón</span></div>
             <div class="capa-slot" id="slot-falda"><span style="color:var(--muted);font-size:0.82rem">Falda</span></div>
             <div class="capa-slot" id="slot-vestido"><span style="color:var(--muted);font-size:0.82rem">Vestido</span></div>
-            <div class="warning-estampado" id="warning-estampado">⚠️ Máximo 1 prenda estampada por look.</div>
+            <div class="warning-box warning-estampado" id="warning-estampado">⚠️ Máximo 1 prenda estampada por look.</div>
             <div style="margin-top:16px">
               <button class="btn btn-primary" style="width:100%" onclick="abrirModalGuardar(null)">💾 Guardar Look</button>
             </div>
@@ -459,18 +352,36 @@
     <div class="section-header">
       <h3 class="section-title" style="font-size:1.2rem">Looks guardados</h3>
     </div>
-    <div id="lista-looks" class="looks-grid">
+    <div id="lista-looks">
       <div class="loading"><div class="spinner"></div> Cargando looks…</div>
     </div>
   </div>
 
-  <!-- ───── VISTA: CALENDARIO ───── -->
+  <!-- ───── CALENDARIO ───── -->
   <div id="view-calendario" class="view">
     <div class="section-header">
       <h2 class="section-title">Calendario 2025</h2>
     </div>
     <div id="calendario-container" class="calendario-grid">
       <div class="loading"><div class="spinner"></div> Cargando calendario…</div>
+    </div>
+
+    <!-- MALETA -->
+    <div class="maleta-panel">
+      <h3>🧳 Lista de maleta</h3>
+      <p class="desc">Selecciona un rango de fechas del calendario para generar la lista de prendas que necesitas empacar.</p>
+      <div class="maleta-range">
+        <div class="form-group">
+          <label>Desde</label>
+          <input type="date" id="maleta-desde" />
+        </div>
+        <div class="form-group">
+          <label>Hasta</label>
+          <input type="date" id="maleta-hasta" />
+        </div>
+        <button class="btn btn-primary" onclick="generarMaleta()">Generar lista</button>
+      </div>
+      <div id="maleta-resultado"></div>
     </div>
   </div>
 
@@ -481,10 +392,7 @@
   <div class="modal">
     <h2>Añadir Prenda</h2>
     <form id="form-prenda" onsubmit="submitPrenda(event)">
-      <div class="form-group">
-        <label>Nombre *</label>
-        <input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" />
-      </div>
+      <div class="form-group"><label>Nombre *</label><input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" /></div>
       <div class="form-group">
         <label>Categoría *</label>
         <select id="prenda-categoria" required>
@@ -516,10 +424,7 @@
           <option value="todo año">Todo el año</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Color dominante *</label>
-        <input type="text" id="prenda-color" required placeholder="Ej: beige, negro, azul marino" />
-      </div>
+      <div class="form-group"><label>Color dominante *</label><input type="text" id="prenda-color" required placeholder="Ej: beige, negro" /></div>
       <div class="form-group">
         <label>Patrón *</label>
         <select id="prenda-patron" required>
@@ -528,15 +433,11 @@
           <option value="estampado">Estampado</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Emoji (opcional)</label>
-        <input type="text" id="prenda-emoji" placeholder="Ej: 👗" maxlength="2" />
-      </div>
+      <div class="form-group"><label>Emoji (opcional)</label><input type="text" id="prenda-emoji" placeholder="Ej: 👗" maxlength="2" /></div>
       <div class="form-group">
         <label>Foto (opcional)</label>
         <div class="file-upload-area" id="upload-area" onclick="document.getElementById('prenda-imagen').click()">
-          <div>📷</div>
-          <p>Haz clic para subir una foto</p>
+          <div>📷</div><p>Haz clic para subir una foto</p>
           <img id="upload-preview" class="upload-preview" style="display:none" />
         </div>
         <input type="file" id="prenda-imagen" accept="image/*" style="display:none" onchange="previewImage(this)" />
@@ -553,26 +454,22 @@
 <div class="modal-overlay" id="modal-guardar">
   <div class="modal">
     <h2>Guardar look</h2>
-    <div class="form-group">
-      <label>Nombre del look *</label>
-      <input type="text" id="guardar-nombre" placeholder="Ej: Look oficina lunes" />
-    </div>
+    <div class="form-group"><label>Nombre del look *</label><input type="text" id="guardar-nombre" placeholder="Ej: Look oficina lunes" /></div>
     <p style="font-size:0.82rem;font-weight:600;margin-bottom:12px">¿Dónde quieres guardarlo?</p>
     <div class="save-options">
       <div class="save-option selected" id="opt-solo" onclick="selectSaveOption('solo')">
-        <div class="icon">💾</div>
-        <div class="label">Solo guardar</div>
+        <div class="icon">💾</div><div class="label">Solo guardar</div>
         <div class="desc">Queda en la biblioteca para usarlo cuando quieras</div>
       </div>
       <div class="save-option" id="opt-calendario" onclick="selectSaveOption('calendario')">
-        <div class="icon">📅</div>
-        <div class="label">Guardar + Asignar día</div>
+        <div class="icon">📅</div><div class="label">Guardar + Asignar día</div>
         <div class="desc">Se guarda y se asigna a un día del calendario</div>
       </div>
     </div>
     <div class="date-picker-section" id="date-picker-section">
       <label>Selecciona el día</label>
-      <input type="date" id="guardar-fecha" />
+      <input type="date" id="guardar-fecha" onchange="checkOficinaAlGuardar()" />
+      <div class="warning-asignar" id="warning-guardar-oficina"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-guardar')">Cancelar</button>
@@ -587,8 +484,9 @@
     <h2 id="modal-asignar-titulo">Asignar look al calendario</h2>
     <div class="form-group" style="margin-top:12px">
       <label>Selecciona el día</label>
-      <input type="date" id="asignar-fecha" />
+      <input type="date" id="asignar-fecha" onchange="checkOficinaAlAsignar()" />
     </div>
+    <div class="warning-asignar" id="warning-asignar-oficina"></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-asignar-dia')">Cancelar</button>
       <button class="btn btn-primary" onclick="confirmarAsignarDia()">Asignar</button>
@@ -596,17 +494,15 @@
   </div>
 </div>
 
-<!-- ───── MODAL: ASIGNAR LOOK A DÍA (desde calendario) ───── -->
+<!-- ───── MODAL: LOOKS DEL DÍA (desde calendario) ───── -->
 <div class="modal-overlay" id="modal-calendario">
   <div class="modal">
-    <h2 id="modal-cal-titulo">Look del día</h2>
-    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Elige el look para este día:</p>
-    <div class="assign-look-row">
+    <h2 id="modal-cal-titulo">Looks del día</h2>
+    <div id="looks-del-dia-list" class="looks-del-dia"></div>
+    <p style="font-size:0.82rem;font-weight:600;margin-bottom:8px">Añadir look:</p>
+    <div class="add-look-row">
       <select id="cal-look-select"></select>
-      <button class="btn btn-primary btn-sm" onclick="asignarLookDia()">Asignar</button>
-    </div>
-    <div style="margin-top:12px">
-      <button class="btn btn-secondary btn-sm" onclick="quitarLookDia()">Quitar look</button>
+      <button class="btn btn-primary btn-sm" onclick="añadirLookAlDia()">+ Añadir</button>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-calendario')">Cerrar</button>
@@ -614,7 +510,6 @@
   </div>
 </div>
 
-<!-- ───── TOAST ───── -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -625,17 +520,17 @@ const sb = createClient(
 );
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
-let allPrendas = [];
-let allLooks = [];
-let calendario = {};
+let allPrendas = [], allLooks = [];
+let calendario = {}; // fecha -> [{id, look_id}, ...]
 let lookBuilder = {};
 let modoActual = 'aleatorio';
 let genFiltros = { contexto: 'all', temporada: 'all' };
 let manualFiltro = 'all';
 let saveOption = 'solo';
-let lookPendienteGuardar = null; // prendas del look a guardar
-let lookIdParaAsignar = null;   // id de look de biblioteca
+let lookPendienteGuardar = null;
+let lookIdParaAsignar = null;
 let calFechaSeleccionada = null;
+let looksGeneradosCache = [];
 
 const CAPAS = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido'];
 const CAPA_LABELS = { chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido' };
@@ -673,8 +568,7 @@ async function seedIfEmpty() {
 async function loadPrendas() {
   const { data } = await sb.from('prendas').select('*').order('created_at', { ascending: false });
   allPrendas = data || [];
-  renderArmario();
-  renderManualSelector();
+  renderArmario(); renderManualSelector();
 }
 
 async function loadLooks() {
@@ -686,7 +580,10 @@ async function loadLooks() {
 async function loadCalendario() {
   const { data } = await sb.from('calendario').select('*');
   calendario = {};
-  (data || []).forEach(r => { calendario[r.fecha] = { look_id: r.look_id, id: r.id }; });
+  (data || []).forEach(r => {
+    if (!calendario[r.fecha]) calendario[r.fecha] = [];
+    calendario[r.fecha].push({ id: r.id, look_id: r.look_id });
+  });
   renderCalendario();
 }
 
@@ -698,7 +595,6 @@ function showView(name, btn) {
   if (btn) btn.classList.add('active');
 }
 
-// ─── MODO TOGGLE ──────────────────────────────────────────────────────────────
 function setModo(modo) {
   modoActual = modo;
   document.getElementById('modo-aleatorio').style.display = modo === 'aleatorio' ? 'block' : 'none';
@@ -708,44 +604,26 @@ function setModo(modo) {
   if (modo === 'manual') renderManualSelector();
 }
 
-// ─── FILTER LISTENERS ─────────────────────────────────────────────────────────
+// ─── FILTERS ──────────────────────────────────────────────────────────────────
 function setupFilterListeners() {
-  // Armario filters
   document.querySelectorAll('[data-view="armario"]').forEach(chip => {
     chip.addEventListener('click', function() {
-      const group = this.closest('.filter-group');
-      group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      renderArmario();
+      this.closest('.filter-group').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active'); renderArmario();
     });
   });
-
-  // Manual filters
   document.querySelectorAll('[data-view="manual"]').forEach(chip => {
     chip.addEventListener('click', function() {
-      const group = this.closest('.filter-group');
-      group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      manualFiltro = this.dataset.value;
-      renderManualSelector();
+      this.closest('.filter-group').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active'); manualFiltro = this.dataset.value; renderManualSelector();
     });
   });
-
-  // Generator filters
   document.querySelectorAll('[data-gen]').forEach(chip => {
     chip.addEventListener('click', function() {
-      const group = this.closest('.chips-row');
-      group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      genFiltros[this.dataset.gen] = this.dataset.value;
+      this.closest('.chips-row').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active'); genFiltros[this.dataset.gen] = this.dataset.value;
     });
   });
-}
-
-// ─── ARMARIO ─────────────────────────────────────────────────────────────────
-function getArmarioFiltros() {
-  const get = (f) => document.querySelector(`[data-filter="${f}"][data-view="armario"].active`)?.dataset.value || 'all';
-  return { contexto: get('contexto'), temporada: get('temporada'), patron: get('patron') };
 }
 
 function filtrarPrendas(prendas, { contexto, temporada, patron, capa } = {}) {
@@ -758,15 +636,18 @@ function filtrarPrendas(prendas, { contexto, temporada, patron, capa } = {}) {
   });
 }
 
+// ─── ARMARIO ─────────────────────────────────────────────────────────────────
+function getArmarioFiltros() {
+  const get = f => document.querySelector(`[data-filter="${f}"][data-view="armario"].active`)?.dataset.value || 'all';
+  return { contexto: get('contexto'), temporada: get('temporada'), patron: get('patron') };
+}
+
 function renderArmario() {
   const container = document.getElementById('grid-prendas');
-  const f = getArmarioFiltros();
-  const filtered = filtrarPrendas(allPrendas, f);
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">👗</div><p>No hay prendas con estos filtros.</p></div>';
-    return;
-  }
-  container.innerHTML = filtered.map(p => prendaCardHTML(p, false)).join('');
+  const filtered = filtrarPrendas(allPrendas, getArmarioFiltros());
+  container.innerHTML = filtered.length
+    ? filtered.map(p => prendaCardHTML(p, false)).join('')
+    : '<div class="empty-state"><div class="icon">👗</div><p>No hay prendas con estos filtros.</p></div>';
 }
 
 function prendaCardHTML(p, selectable) {
@@ -774,140 +655,42 @@ function prendaCardHTML(p, selectable) {
   const imgHTML = p.imagen_url
     ? `<div class="prenda-img"><img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy" /></div>`
     : `<div class="prenda-img">${p.emoji || '👗'}</div>`;
-
   const actions = selectable
-    ? `<div class="prenda-card-actions">
-        <button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button>
-       </div>`
-    : `<div class="prenda-card-actions">
-        <button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button>
-       </div>`;
-
-  return `<div class="prenda-card ${selected ? 'selected' : ''}" id="card-${p.id}">
-    ${imgHTML}
+    ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
+    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
+  return `<div class="prenda-card ${selected ? 'selected' : ''}">${imgHTML}
     <div class="prenda-info">
       <div class="prenda-nombre">${p.nombre}</div>
       <div class="prenda-meta"><span class="tag">${p.categoria}</span><span class="tag tag-${p.patron}">${p.patron}</span></div>
       <div class="prenda-meta" style="margin-top:4px"><span class="tag">${p.temporada}</span><span class="tag">${p.color}</span></div>
-    </div>
-    ${actions}
-  </div>`;
+    </div>${actions}</div>`;
 }
 
 async function eliminarPrenda(id) {
   if (!confirm('¿Eliminar esta prenda?')) return;
   await sb.from('prendas').delete().eq('id', id);
-  showToast('Prenda eliminada');
-  await loadPrendas();
+  showToast('Prenda eliminada'); await loadPrendas();
 }
 
 // ─── MODO ALEATORIO ───────────────────────────────────────────────────────────
-function generarLooks() {
-  const candidatas = filtrarPrendas(allPrendas, genFiltros);
-  const porCategoria = {};
-  CAPAS.forEach(cat => {
-    porCategoria[cat] = candidatas.filter(p => p.categoria === cat);
-  });
-
-  // Construir hasta 5 combinaciones aleatorias válidas
-  const combinaciones = [];
-  const intentos = 50;
-
-  for (let i = 0; i < intentos && combinaciones.length < 5; i++) {
-    const look = {};
-
-    // Decidir si usar vestido o top+pantalon/falda
-    const usarVestido = porCategoria.vestido.length > 0 && Math.random() < 0.35;
-
-    if (usarVestido) {
-      look.vestido = aleatorio(porCategoria.vestido);
-    } else {
-      // top obligatorio si hay
-      if (porCategoria.top.length) look.top = aleatorio(porCategoria.top);
-      // pantalon o falda
-      const inferior = [];
-      if (porCategoria.pantalon.length) inferior.push(...porCategoria.pantalon.map(p => ({ ...p, _cat: 'pantalon' })));
-      if (porCategoria.falda.length) inferior.push(...porCategoria.falda.map(p => ({ ...p, _cat: 'falda' })));
-      if (inferior.length) {
-        const elegida = aleatorio(inferior);
-        look[elegida._cat || elegida.categoria] = elegida;
-      }
-    }
-
-    // Chaqueta opcional (60%)
-    if (porCategoria.chaqueta.length && Math.random() < 0.6) {
-      look.chaqueta = aleatorio(porCategoria.chaqueta);
-    }
-
-    // Validar: al menos 2 prendas, máx 1 estampado
-    const prendas = Object.values(look);
-    if (prendas.length < 2) continue;
-    const estampados = prendas.filter(p => p.patron === 'estampado').length;
-    if (estampados > 1) continue;
-
-    // Evitar duplicado exacto con combinaciones ya generadas
-    const key = CAPAS.map(c => look[c]?.id || 0).join('-');
-    if (combinaciones.some(c => c.key === key)) continue;
-
-    combinaciones.push({ key, look, prendas });
-  }
-
-  const container = document.getElementById('looks-generados-container');
-  document.getElementById('btn-regenerar').style.display = 'inline-flex';
-
-  if (!combinaciones.length) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>No hay suficientes prendas con estos filtros para generar looks.<br>Prueba con otros filtros o añade más prendas.</p></div>';
-    return;
-  }
-
-  container.innerHTML = `<div class="looks-generados">${combinaciones.map((c, i) => lookGeneradoHTML(c, i)).join('')}</div>`;
-}
-
-function aleatorio(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function lookGeneradoHTML({ look, prendas }, idx) {
-  const capasHTML = CAPAS
-    .filter(cat => look[cat])
-    .map(cat => `<div class="look-capa-item">
-      <span class="capa-cat">${CAPA_LABELS[cat]}</span>
-      <span>${look[cat].emoji || '👗'} ${look[cat].nombre}</span>
-    </div>`).join('');
-
-  return `<div class="look-generado-card">
-    <div class="look-generado-titulo">Look ${idx + 1}</div>
-    <div class="look-capas">${capasHTML}</div>
-    <div class="look-card-actions">
-      <button class="btn btn-primary btn-sm" onclick="abrirModalGuardar(${idx})">💾 Guardar este look</button>
-    </div>
-  </div>`;
-}
-
-// Guardamos los looks generados en memoria para recuperarlos al guardar
-let looksGeneradosCache = [];
+function aleatorio(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function generarLooks() {
   const candidatas = filtrarPrendas(allPrendas, genFiltros);
-  const porCategoria = {};
-  CAPAS.forEach(cat => { porCategoria[cat] = candidatas.filter(p => p.categoria === cat); });
-
+  const por = {};
+  CAPAS.forEach(c => { por[c] = candidatas.filter(p => p.categoria === c); });
   const combinaciones = [];
   for (let i = 0; i < 60 && combinaciones.length < 5; i++) {
     const look = {};
-    const usarVestido = porCategoria.vestido.length > 0 && Math.random() < 0.35;
+    const usarVestido = por.vestido.length > 0 && Math.random() < 0.35;
     if (usarVestido) {
-      look.vestido = aleatorio(porCategoria.vestido);
+      look.vestido = aleatorio(por.vestido);
     } else {
-      if (porCategoria.top.length) look.top = aleatorio(porCategoria.top);
-      const inferior = [
-        ...porCategoria.pantalon.map(p => ({ ...p })),
-        ...porCategoria.falda.map(p => ({ ...p }))
-      ];
-      if (inferior.length) { const el = aleatorio(inferior); look[el.categoria] = el; }
+      if (por.top.length) look.top = aleatorio(por.top);
+      const inf = [...por.pantalon, ...por.falda];
+      if (inf.length) { const el = aleatorio(inf); look[el.categoria] = el; }
     }
-    if (porCategoria.chaqueta.length && Math.random() < 0.6) look.chaqueta = aleatorio(porCategoria.chaqueta);
-
+    if (por.chaqueta.length && Math.random() < 0.6) look.chaqueta = aleatorio(por.chaqueta);
     const prendas = Object.values(look);
     if (prendas.length < 2) continue;
     if (prendas.filter(p => p.patron === 'estampado').length > 1) continue;
@@ -915,76 +698,118 @@ function generarLooks() {
     if (combinaciones.some(c => c.key === key)) continue;
     combinaciones.push({ key, look, prendas });
   }
-
   looksGeneradosCache = combinaciones;
-  const container = document.getElementById('looks-generados-container');
   document.getElementById('btn-regenerar').style.display = 'inline-flex';
-
+  const container = document.getElementById('looks-generados-container');
   if (!combinaciones.length) {
     container.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>No hay suficientes prendas con estos filtros.<br>Prueba otros filtros o añade más prendas.</p></div>';
     return;
   }
-  container.innerHTML = `<div class="looks-generados">${combinaciones.map((c, i) => lookGeneradoHTML(c, i)).join('')}</div>`;
+  container.innerHTML = `<div class="looks-generados">${combinaciones.map((c, i) => `
+    <div class="look-generado-card">
+      <div class="look-generado-titulo">Look ${i + 1}</div>
+      <div class="look-capas">${CAPAS.filter(cat => c.look[cat]).map(cat => `
+        <div class="look-capa-item">
+          <span class="capa-cat">${CAPA_LABELS[cat]}</span>
+          <span>${c.look[cat].emoji || '👗'} ${c.look[cat].nombre}</span>
+        </div>`).join('')}</div>
+      <div class="look-card-actions">
+        <button class="btn btn-primary btn-sm" onclick="abrirModalGuardar(${i})">💾 Guardar este look</button>
+      </div>
+    </div>`).join('')}</div>`;
 }
 
 // ─── MODO MANUAL ─────────────────────────────────────────────────────────────
 function renderManualSelector() {
   const container = document.getElementById('grid-manual-selector');
   const filtered = filtrarPrendas(allPrendas, { capa: manualFiltro });
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">👗</div><p>Sin prendas en esta categoría.</p></div>';
-    return;
-  }
-  container.innerHTML = filtered.map(p => prendaCardHTML(p, true)).join('');
+  container.innerHTML = filtered.length
+    ? filtered.map(p => prendaCardHTML(p, true)).join('')
+    : '<div class="empty-state"><div class="icon">👗</div><p>Sin prendas en esta categoría.</p></div>';
 }
 
 function toggleLookBuilder(id) {
-  const prenda = allPrendas.find(p => p.id === id);
-  if (!prenda) return;
-  if (lookBuilder[prenda.categoria]?.id === id) delete lookBuilder[prenda.categoria];
-  else lookBuilder[prenda.categoria] = prenda;
-  updateCapasPanel();
-  renderManualSelector();
+  const p = allPrendas.find(p => p.id === id); if (!p) return;
+  if (lookBuilder[p.categoria]?.id === id) delete lookBuilder[p.categoria];
+  else lookBuilder[p.categoria] = p;
+  updateCapasPanel(); renderManualSelector();
 }
 
 function updateCapasPanel() {
   CAPAS.forEach(cat => {
     const slot = document.getElementById('slot-' + cat);
-    const prenda = lookBuilder[cat];
-    if (prenda) {
+    const p = lookBuilder[cat];
+    if (p) {
       slot.classList.add('filled');
-      slot.innerHTML = `<span style="font-size:0.85rem;font-weight:600">${prenda.emoji || '👗'} ${prenda.nombre}</span>
-        <button class="btn btn-secondary btn-sm" onclick="toggleLookBuilder(${prenda.id})">✕</button>`;
+      slot.innerHTML = `<span style="font-size:0.85rem;font-weight:600">${p.emoji || '👗'} ${p.nombre}</span>
+        <button class="btn btn-secondary btn-sm" onclick="toggleLookBuilder(${p.id})">✕</button>`;
     } else {
       slot.classList.remove('filled');
       slot.innerHTML = `<span style="color:var(--muted);font-size:0.82rem">${CAPA_LABELS[cat]}</span>`;
     }
   });
-  const estampados = Object.values(lookBuilder).filter(p => p.patron === 'estampado').length;
-  document.getElementById('warning-estampado').classList.toggle('show', estampados > 1);
+  const est = Object.values(lookBuilder).filter(p => p.patron === 'estampado').length;
+  document.getElementById('warning-estampado').classList.toggle('show', est > 1);
 }
 
-function limpiarLookBuilder() {
-  lookBuilder = {};
-  updateCapasPanel();
-  renderManualSelector();
+function limpiarLookBuilder() { lookBuilder = {}; updateCapasPanel(); renderManualSelector(); }
+
+// ─── REGLA 7 DÍAS OFICINA ─────────────────────────────────────────────────────
+function lookEsOficina(lookId) {
+  const look = allLooks.find(l => l.id === lookId);
+  return look?.contextos?.includes('oficina') ?? false;
+}
+
+function checkRepeticion7Dias(lookId, fechaStr) {
+  if (!lookEsOficina(lookId)) return null;
+  const fecha = new Date(fechaStr);
+  for (let d = 1; d <= 7; d++) {
+    const prev = new Date(fecha);
+    prev.setDate(prev.getDate() - d);
+    const key = prev.toISOString().split('T')[0];
+    const entradas = calendario[key] || [];
+    if (entradas.some(e => e.look_id === lookId)) {
+      const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+      return `Este look de oficina ya lo usaste el ${dias[prev.getDay()]} ${prev.getDate()}/${prev.getMonth()+1}.`;
+    }
+  }
+  return null;
+}
+
+function checkOficinaAlAsignar() {
+  const fecha = document.getElementById('asignar-fecha').value;
+  const w = document.getElementById('warning-asignar-oficina');
+  if (!fecha || !lookIdParaAsignar) { w.classList.remove('show'); return; }
+  const msg = checkRepeticion7Dias(lookIdParaAsignar, fecha);
+  w.textContent = msg ? '⚠️ ' + msg + ' Puedes asignarlo igualmente.' : '';
+  w.classList.toggle('show', !!msg);
+}
+
+function checkOficinaAlGuardar() {
+  const fecha = document.getElementById('guardar-fecha').value;
+  const w = document.getElementById('warning-guardar-oficina');
+  if (!fecha || !lookPendienteGuardar) { w.classList.remove('show'); return; }
+  // Para el look pendiente, comprobar si sus contextos incluyen oficina
+  const esOficina = lookPendienteGuardar.some(p => p.contextos?.includes('oficina'));
+  if (!esOficina) { w.classList.remove('show'); return; }
+  // Buscar en calendario las 7 fechas previas si alguno de los mismos IDs de prenda aparece
+  // (aquí no tenemos look_id aún, así que simplemente avisamos si hay looks de oficina esos días)
+  w.classList.remove('show');
 }
 
 // ─── MODAL GUARDAR LOOK ───────────────────────────────────────────────────────
 function abrirModalGuardar(idxGenerado) {
-  // idxGenerado: null = modo manual, número = look aleatorio
   if (idxGenerado !== null) {
-    const c = looksGeneradosCache[idxGenerado];
-    if (!c) return;
+    const c = looksGeneradosCache[idxGenerado]; if (!c) return;
     lookPendienteGuardar = c.prendas;
   } else {
     const prendas = Object.values(lookBuilder);
     if (!prendas.length) { showToast('Selecciona al menos una prenda', 'error'); return; }
-    if (prendas.filter(p => p.patron === 'estampado').length > 1) { showToast('Máximo 1 prenda estampada por look', 'error'); return; }
+    if (prendas.filter(p => p.patron === 'estampado').length > 1) { showToast('Máximo 1 prenda estampada', 'error'); return; }
     lookPendienteGuardar = prendas;
   }
-
   document.getElementById('guardar-nombre').value = '';
+  document.getElementById('warning-guardar-oficina').classList.remove('show');
   selectSaveOption('solo');
   openModal('modal-guardar');
 }
@@ -999,60 +824,40 @@ function selectSaveOption(opt) {
 async function confirmarGuardarLook() {
   const nombre = document.getElementById('guardar-nombre').value.trim();
   if (!nombre) { showToast('Escribe un nombre para el look', 'error'); return; }
-
-  if (saveOption === 'calendario') {
-    const fecha = document.getElementById('guardar-fecha').value;
-    if (!fecha) { showToast('Selecciona una fecha', 'error'); return; }
+  if (saveOption === 'calendario' && !document.getElementById('guardar-fecha').value) {
+    showToast('Selecciona una fecha', 'error'); return;
   }
-
-  const contextos = [...new Set(lookPendienteGuardar.flatMap(p => p.contextos))];
+  const contextos = [...new Set(lookPendienteGuardar.flatMap(p => p.contextos || []))];
   const { data, error } = await sb.from('looks').insert([{
     nombre,
     prendas: lookPendienteGuardar.map(p => ({ id: p.id, nombre: p.nombre, emoji: p.emoji, categoria: p.categoria })),
     contextos
   }]).select().single();
-
   if (error) { showToast('Error guardando look', 'error'); return; }
-
   if (saveOption === 'calendario') {
     const fecha = document.getElementById('guardar-fecha').value;
-    const existing = calendario[fecha];
-    if (existing) {
-      await sb.from('calendario').update({ look_id: data.id }).eq('id', existing.id);
-    } else {
-      await sb.from('calendario').insert([{ fecha, look_id: data.id }]);
-    }
+    await sb.from('calendario').insert([{ fecha, look_id: data.id }]);
     showToast(`Look guardado y asignado al ${fecha} ✓`, 'success');
   } else {
     showToast('Look guardado en la biblioteca ✓', 'success');
   }
-
   closeModal('modal-guardar');
-  lookPendienteGuardar = null;
-  limpiarLookBuilder();
+  lookPendienteGuardar = null; limpiarLookBuilder();
   await Promise.all([loadLooks(), loadCalendario()]);
 }
 
 // ─── BIBLIOTECA DE LOOKS ─────────────────────────────────────────────────────
-function inferirTemporadaLook(look) {
-  const temporadas = new Set(
-    (look.prendas || []).map(p => {
-      const prenda = allPrendas.find(ap => ap.id === p.id);
-      return prenda ? prenda.temporada : 'todo año';
-    })
-  );
-  if (temporadas.has('P/V') && !temporadas.has('O/I')) return 'P/V';
-  if (temporadas.has('O/I') && !temporadas.has('P/V')) return 'O/I';
-  if (temporadas.has('P/V') && temporadas.has('O/I')) return 'todo año';
+function inferirTemporada(look) {
+  const temps = new Set((look.prendas || []).map(p => allPrendas.find(ap => ap.id === p.id)?.temporada || 'todo año'));
+  if (temps.has('P/V') && !temps.has('O/I')) return 'P/V';
+  if (temps.has('O/I') && !temps.has('P/V')) return 'O/I';
   return 'todo año';
 }
 
 function lookCardHTML(l) {
   return `<div class="look-card">
     <h3>${l.nombre}</h3>
-    <div class="look-prendas">
-      ${l.prendas.map(p => `<span class="look-prenda-chip">${p.emoji || '👗'} ${p.nombre}</span>`).join('')}
-    </div>
+    <div class="look-prendas">${l.prendas.map(p => `<span class="look-prenda-chip">${p.emoji || '👗'} ${p.nombre}</span>`).join('')}</div>
     ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">${l.contextos.join(' · ')}</div>` : ''}
     <div class="look-card-footer">
       <button class="btn btn-accent btn-sm" onclick="abrirAsignarDia(${l.id}, '${escapeStr(l.nombre)}')">📅 Asignar a día</button>
@@ -1063,30 +868,22 @@ function lookCardHTML(l) {
 
 function renderListaLooks() {
   const container = document.getElementById('lista-looks');
-  if (!allLooks.length) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">✨</div><p>Aún no hay looks guardados.</p></div>';
-    return;
-  }
-
+  if (!allLooks.length) { container.innerHTML = '<div class="empty-state"><div class="icon">✨</div><p>Aún no hay looks guardados.</p></div>'; return; }
   const grupos = { 'P/V': [], 'O/I': [], 'todo año': [] };
-  allLooks.forEach(l => { grupos[inferirTemporadaLook(l)].push(l); });
-
+  allLooks.forEach(l => grupos[inferirTemporada(l)].push(l));
   const secciones = [
-    { key: 'P/V',      label: '🌸 Primavera / Verano', cls: 'pv' },
-    { key: 'O/I',      label: '🍂 Otoño / Invierno',   cls: 'oi' },
-    { key: 'todo año', label: '✨ Todo el año',          cls: 'all' },
+    { key: 'P/V', label: '🌸 Primavera / Verano', cls: 'pv' },
+    { key: 'O/I', label: '🍂 Otoño / Invierno', cls: 'oi' },
+    { key: 'todo año', label: '✨ Todo el año', cls: 'all' },
   ];
-
-  container.innerHTML = secciones
-    .filter(s => grupos[s.key].length > 0)
-    .map(s => `
-      <div class="temporada-section">
-        <div class="temporada-header">
-          <span class="temporada-badge ${s.cls}">${s.label}</span>
-          <span class="temporada-count">${grupos[s.key].length} look${grupos[s.key].length > 1 ? 's' : ''}</span>
-        </div>
-        <div class="looks-grid">${grupos[s.key].map(lookCardHTML).join('')}</div>
-      </div>`).join('');
+  container.innerHTML = secciones.filter(s => grupos[s.key].length).map(s => `
+    <div class="temporada-section">
+      <div class="temporada-header">
+        <span class="temporada-badge ${s.cls}">${s.label}</span>
+        <span class="temporada-count">${grupos[s.key].length} look${grupos[s.key].length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="looks-grid">${grupos[s.key].map(lookCardHTML).join('')}</div>
+    </div>`).join('');
 }
 
 function escapeStr(s) { return s.replace(/'/g, "\\'"); }
@@ -1095,18 +892,14 @@ function abrirAsignarDia(lookId, nombre) {
   lookIdParaAsignar = lookId;
   document.getElementById('modal-asignar-titulo').textContent = `Asignar "${nombre}" al calendario`;
   document.getElementById('asignar-fecha').value = '';
+  document.getElementById('warning-asignar-oficina').classList.remove('show');
   openModal('modal-asignar-dia');
 }
 
 async function confirmarAsignarDia() {
   const fecha = document.getElementById('asignar-fecha').value;
   if (!fecha) { showToast('Selecciona una fecha', 'error'); return; }
-  const existing = calendario[fecha];
-  if (existing) {
-    await sb.from('calendario').update({ look_id: lookIdParaAsignar }).eq('id', existing.id);
-  } else {
-    await sb.from('calendario').insert([{ fecha, look_id: lookIdParaAsignar }]);
-  }
+  await sb.from('calendario').insert([{ fecha, look_id: lookIdParaAsignar }]);
   showToast('Look asignado al calendario ✓', 'success');
   closeModal('modal-asignar-dia');
   await loadCalendario();
@@ -1125,18 +918,17 @@ function renderCalendario() {
   const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const hoy = new Date();
   container.innerHTML = meses.map((mes, mi) => {
-    const año = 2025;
-    const offset = (new Date(año, mi, 1).getDay() + 6) % 7;
-    const diasMes = new Date(año, mi + 1, 0).getDate();
+    const año = 2025, offset = (new Date(año, mi, 1).getDay() + 6) % 7, diasMes = new Date(año, mi + 1, 0).getDate();
     let html = `<div class="mes-card"><div class="mes-nombre">${mes}</div><div class="dias-grid">
       ${['L','M','X','J','V','S','D'].map(d => `<div class="dia-header">${d}</div>`).join('')}
       ${Array(offset).fill('<div class="dia vacio"></div>').join('')}`;
     for (let d = 1; d <= diasMes; d++) {
       const fecha = `${año}-${String(mi+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const tieneL = calendario[fecha];
+      const entradas = calendario[fecha] || [];
       const esHoy = hoy.getFullYear()===año && hoy.getMonth()===mi && hoy.getDate()===d;
-      const titulo = tieneL ? getLookNombre(tieneL.look_id) : '';
-      html += `<div class="dia ${tieneL?'tiene-look':''} ${esHoy?'hoy':''}" onclick="abrirModalCalendario('${fecha}')" title="${titulo}">${d}</div>`;
+      const badge = entradas.length > 1 ? `<span class="dia-badge">${entradas.length}</span>` : '';
+      const nombres = entradas.map(e => getLookNombre(e.look_id)).filter(Boolean).join(', ');
+      html += `<div class="dia ${entradas.length ? 'tiene-look' : ''} ${esHoy ? 'hoy' : ''}" onclick="abrirModalCalendario('${fecha}')" title="${nombres}">${d}${badge}</div>`;
     }
     html += '</div></div>';
     return html;
@@ -1147,36 +939,125 @@ function getLookNombre(id) { return allLooks.find(l => l.id === id)?.nombre || '
 
 function abrirModalCalendario(fecha) {
   calFechaSeleccionada = fecha;
-  const currentLookId = calendario[fecha]?.look_id;
-  document.getElementById('modal-cal-titulo').textContent = `Look para ${fecha}`;
+  document.getElementById('modal-cal-titulo').textContent = `Looks del ${fecha}`;
+  renderLooksDelDia(fecha);
+  const entradas = calendario[fecha] || [];
+  const usados = new Set(entradas.map(e => e.look_id));
   const select = document.getElementById('cal-look-select');
-  select.innerHTML = '<option value="">Sin look</option>' +
-    allLooks.map(l => `<option value="${l.id}" ${l.id===currentLookId?'selected':''}>${l.nombre}</option>`).join('');
+  select.innerHTML = '<option value="">Selecciona un look…</option>' +
+    allLooks.map(l => `<option value="${l.id}" ${usados.has(l.id) ? 'disabled' : ''}>${l.nombre}${usados.has(l.id) ? ' (ya asignado)' : ''}</option>`).join('');
   openModal('modal-calendario');
 }
 
-async function asignarLookDia() {
-  const lookId = document.getElementById('cal-look-select').value || null;
-  const existing = calendario[calFechaSeleccionada];
-  if (existing) {
-    await sb.from('calendario').update({ look_id: lookId }).eq('id', existing.id);
-  } else {
-    if (!lookId) { closeModal('modal-calendario'); return; }
-    await sb.from('calendario').insert([{ fecha: calFechaSeleccionada, look_id: lookId }]);
+function renderLooksDelDia(fecha) {
+  const entradas = calendario[fecha] || [];
+  const container = document.getElementById('looks-del-dia-list');
+  if (!entradas.length) {
+    container.innerHTML = '<p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Sin looks asignados aún.</p>';
+    return;
   }
-  showToast('Calendario actualizado ✓', 'success');
-  closeModal('modal-calendario');
-  await loadCalendario();
+  container.innerHTML = entradas.map(e => {
+    const nombre = getLookNombre(e.look_id);
+    const w = checkRepeticion7Dias(e.look_id, fecha);
+    return `<div class="look-dia-row">
+      <div>
+        <div class="look-dia-nombre">${nombre || 'Look eliminado'}</div>
+        ${w ? `<div style="font-size:0.72rem;color:#F57F17;margin-top:2px">⚠️ ${w}</div>` : ''}
+      </div>
+      <button class="btn btn-danger btn-xs" onclick="quitarLookDelDia(${e.id})">✕</button>
+    </div>`;
+  }).join('');
 }
 
-async function quitarLookDia() {
-  const existing = calendario[calFechaSeleccionada];
-  if (existing) {
-    await sb.from('calendario').delete().eq('id', existing.id);
-    showToast('Look quitado');
-    closeModal('modal-calendario');
-    await loadCalendario();
-  } else closeModal('modal-calendario');
+async function añadirLookAlDia() {
+  const lookId = parseInt(document.getElementById('cal-look-select').value);
+  if (!lookId) { showToast('Selecciona un look', 'error'); return; }
+  const w = checkRepeticion7Dias(lookId, calFechaSeleccionada);
+  if (w) showToast('⚠️ ' + w, '');
+  await sb.from('calendario').insert([{ fecha: calFechaSeleccionada, look_id: lookId }]);
+  showToast('Look añadido al día ✓', 'success');
+  await loadCalendario();
+  abrirModalCalendario(calFechaSeleccionada);
+}
+
+async function quitarLookDelDia(entradaId) {
+  await sb.from('calendario').delete().eq('id', entradaId);
+  showToast('Look quitado');
+  await loadCalendario();
+  renderLooksDelDia(calFechaSeleccionada);
+  // actualizar select
+  const entradas = calendario[calFechaSeleccionada] || [];
+  const usados = new Set(entradas.map(e => e.look_id));
+  const select = document.getElementById('cal-look-select');
+  select.innerHTML = '<option value="">Selecciona un look…</option>' +
+    allLooks.map(l => `<option value="${l.id}" ${usados.has(l.id) ? 'disabled' : ''}>${l.nombre}${usados.has(l.id) ? ' (ya asignado)' : ''}</option>`).join('');
+}
+
+// ─── MALETA ───────────────────────────────────────────────────────────────────
+function generarMaleta() {
+  const desde = document.getElementById('maleta-desde').value;
+  const hasta = document.getElementById('maleta-hasta').value;
+  const container = document.getElementById('maleta-resultado');
+  if (!desde || !hasta) { showToast('Selecciona las dos fechas', 'error'); return; }
+  if (desde > hasta) { showToast('La fecha de inicio debe ser anterior al final', 'error'); return; }
+
+  // Recoger todas las entradas en el rango
+  const prendasUso = {}; // prenda_id -> { prenda, usos }
+  let d = new Date(desde);
+  const fin = new Date(hasta);
+  while (d <= fin) {
+    const key = d.toISOString().split('T')[0];
+    (calendario[key] || []).forEach(e => {
+      const look = allLooks.find(l => l.id === e.look_id);
+      if (!look) return;
+      look.prendas.forEach(lp => {
+        const prenda = allPrendas.find(ap => ap.id === lp.id);
+        if (!prenda) return;
+        if (!prendasUso[prenda.id]) prendasUso[prenda.id] = { prenda, usos: 0 };
+        prendasUso[prenda.id].usos++;
+      });
+    });
+    d.setDate(d.getDate() + 1);
+  }
+
+  const items = Object.values(prendasUso);
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🧳</div><p>No hay looks asignados en ese rango de fechas.</p></div>';
+    return;
+  }
+
+  const porCategoria = {};
+  items.forEach(({ prenda, usos }) => {
+    const cat = prenda.categoria;
+    if (!porCategoria[cat]) porCategoria[cat] = [];
+    porCategoria[cat].push({ prenda, usos });
+  });
+
+  const ordenCat = ['chaqueta','vestido','top','pantalon','falda','zapatos','accesorio'];
+  const categoriasOrdenadas = [...new Set([...ordenCat, ...Object.keys(porCategoria)])].filter(c => porCategoria[c]);
+
+  const dias = Math.round((fin - new Date(desde)) / 86400000) + 1;
+  container.innerHTML = `
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">
+      ${items.length} prendas para ${dias} día${dias > 1 ? 's' : ''} · ${desde} → ${hasta}
+    </div>
+    ${categoriasOrdenadas.map(cat => `
+      <div class="maleta-categoria">
+        <div class="maleta-cat-title">${CAPA_LABELS[cat] || cat} (${porCategoria[cat].length})</div>
+        <div class="maleta-items">
+          ${porCategoria[cat].map(({ prenda, usos }) => `
+            <div class="maleta-item">
+              <input type="checkbox" class="maleta-checkbox" />
+              <div class="maleta-item-img">${prenda.imagen_url
+                ? `<img src="${prenda.imagen_url}" alt="${prenda.nombre}" />`
+                : (prenda.emoji || '👗')}</div>
+              <div class="maleta-item-info">
+                <div class="maleta-item-nombre">${prenda.nombre}</div>
+                <div class="maleta-item-usos">${usos} uso${usos > 1 ? 's' : ''} · ${prenda.color} · ${prenda.patron}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}`;
 }
 
 // ─── MODAL PRENDA ─────────────────────────────────────────────────────────────
@@ -1200,8 +1081,7 @@ function setupCheckboxChips() {
 function previewImage(input) {
   const file = input.files[0]; if (!file) return;
   const preview = document.getElementById('upload-preview');
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
+  preview.src = URL.createObjectURL(file); preview.style.display = 'block';
   document.getElementById('upload-area').classList.add('has-file');
 }
 
@@ -1209,55 +1089,42 @@ async function submitPrenda(e) {
   e.preventDefault();
   const btn = document.getElementById('btn-submit-prenda');
   btn.disabled = true; btn.textContent = 'Guardando…';
-
   const contextos = [...document.querySelectorAll('#prenda-contextos input:checked')].map(i => i.value);
   if (!contextos.length) { showToast('Selecciona al menos un contexto', 'error'); btn.disabled = false; btn.textContent = 'Guardar'; return; }
-
   let imagen_url = null;
   const fileInput = document.getElementById('prenda-imagen');
   if (fileInput.files[0]) {
-    const file = fileInput.files[0];
-    const ext = file.name.split('.').pop();
-    const path = `${Date.now()}.${ext}`;
+    const file = fileInput.files[0], ext = file.name.split('.').pop(), path = `${Date.now()}.${ext}`;
     const { error: upErr } = await sb.storage.from('prendas').upload(path, file, { upsert: true });
-    if (!upErr) {
-      const { data } = sb.storage.from('prendas').getPublicUrl(path);
-      imagen_url = data.publicUrl;
-    }
+    if (!upErr) { const { data } = sb.storage.from('prendas').getPublicUrl(path); imagen_url = data.publicUrl; }
   }
-
   const { error } = await sb.from('prendas').insert([{
     nombre: document.getElementById('prenda-nombre').value,
     categoria: document.getElementById('prenda-categoria').value,
-    contextos,
-    temporada: document.getElementById('prenda-temporada').value,
+    contextos, temporada: document.getElementById('prenda-temporada').value,
     color: document.getElementById('prenda-color').value,
     patron: document.getElementById('prenda-patron').value,
-    emoji: document.getElementById('prenda-emoji').value || null,
-    imagen_url
+    emoji: document.getElementById('prenda-emoji').value || null, imagen_url
   }]);
-
   btn.disabled = false; btn.textContent = 'Guardar';
   if (error) { showToast('Error al guardar', 'error'); return; }
   showToast('Prenda añadida ✓', 'success');
-  closeModal('modal-prenda');
-  await loadPrendas();
+  closeModal('modal-prenda'); await loadPrendas();
 }
 
-// ─── MODALES ─────────────────────────────────────────────────────────────────
+// ─── MODALES / TOAST ─────────────────────────────────────────────────────────
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = `toast ${type} show`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 init();
