@@ -122,6 +122,8 @@
     @media (max-width: 768px) { .calendario-grid { grid-template-columns: 1fr; } }
     .mes-card { background: var(--white); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
     .mes-nombre { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 12px; }
+    .mes-actual { border: 2px solid var(--sage); }
+    .mes-actual .mes-nombre { color: var(--sage-dark); font-weight: 700; }
     .dias-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
     .dia-header { font-size: 0.65rem; text-align: center; color: var(--muted); padding: 4px 0; font-weight: 600; }
     .dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: var(--carbon); position: relative; flex-direction: column; gap: 1px; }
@@ -579,7 +581,6 @@ async function loadLooks() {
   renderListaLooks();
 }
 
-document.getElementById('cal-año').textContent = new Date().getFullYear();
 
 async function loadCalendario() {
   const { data } = await sb.from('calendario').select('*');
@@ -922,10 +923,13 @@ function renderCalendario() {
   const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const hoy = new Date();
   const año = hoy.getFullYear();
+  const mesActual = hoy.getMonth();
+  document.getElementById('cal-año').textContent = año;
   container.innerHTML = meses.map((mes, mi) => {
     const offset = (new Date(año, mi, 1).getDay() + 6) % 7;
     const diasMes = new Date(año, mi + 1, 0).getDate();
-    let html = `<div class="mes-card"><div class="mes-nombre">${mes}</div><div class="dias-grid">
+    const esActual = mi === mesActual;
+    let html = `<div class="mes-card ${esActual ? 'mes-actual' : ''}" ${esActual ? 'id="mes-actual"' : ''}><div class="mes-nombre">${mes}</div><div class="dias-grid">
       ${['L','M','X','J','V','S','D'].map(d => `<div class="dia-header">${d}</div>`).join('')}
       ${Array(offset).fill('<div class="dia vacio"></div>').join('')}`;
     for (let d = 1; d <= diasMes; d++) {
@@ -941,6 +945,8 @@ function renderCalendario() {
     html += '</div></div>';
     return html;
   }).join('');
+  // Scroll al mes actual
+  setTimeout(() => document.getElementById('mes-actual')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 function getLookNombre(id) { return allLooks.find(l => l.id === id)?.nombre || ''; }
