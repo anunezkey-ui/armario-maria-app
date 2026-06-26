@@ -191,6 +191,21 @@
     }
     .look-card-footer { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
+    /* BIBLIOTECA POR TEMPORADA */
+    .temporada-section { margin-bottom: 36px; }
+    .temporada-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+      padding-bottom: 10px; border-bottom: 2px solid var(--border);
+    }
+    .temporada-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+    }
+    .temporada-badge.pv { background: #E8F5E9; color: #2E7D32; }
+    .temporada-badge.oi { background: #E3F2FD; color: #1565C0; }
+    .temporada-badge.all { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .temporada-count { font-size: 0.78rem; color: var(--muted); }
+
     /* CALENDARIO */
     .calendario-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     @media (max-width: 768px) { .calendario-grid { grid-template-columns: 1fr; } }
@@ -1019,24 +1034,59 @@ async function confirmarGuardarLook() {
 }
 
 // ─── BIBLIOTECA DE LOOKS ─────────────────────────────────────────────────────
+function inferirTemporadaLook(look) {
+  const temporadas = new Set(
+    (look.prendas || []).map(p => {
+      const prenda = allPrendas.find(ap => ap.id === p.id);
+      return prenda ? prenda.temporada : 'todo año';
+    })
+  );
+  if (temporadas.has('P/V') && !temporadas.has('O/I')) return 'P/V';
+  if (temporadas.has('O/I') && !temporadas.has('P/V')) return 'O/I';
+  if (temporadas.has('P/V') && temporadas.has('O/I')) return 'todo año';
+  return 'todo año';
+}
+
+function lookCardHTML(l) {
+  return `<div class="look-card">
+    <h3>${l.nombre}</h3>
+    <div class="look-prendas">
+      ${l.prendas.map(p => `<span class="look-prenda-chip">${p.emoji || '👗'} ${p.nombre}</span>`).join('')}
+    </div>
+    ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">${l.contextos.join(' · ')}</div>` : ''}
+    <div class="look-card-footer">
+      <button class="btn btn-accent btn-sm" onclick="abrirAsignarDia(${l.id}, '${escapeStr(l.nombre)}')">📅 Asignar a día</button>
+      <button class="btn btn-danger btn-sm" onclick="eliminarLook(${l.id})">🗑 Eliminar</button>
+    </div>
+  </div>`;
+}
+
 function renderListaLooks() {
   const container = document.getElementById('lista-looks');
   if (!allLooks.length) {
     container.innerHTML = '<div class="empty-state"><div class="icon">✨</div><p>Aún no hay looks guardados.</p></div>';
     return;
   }
-  container.innerHTML = allLooks.map(l => `
-    <div class="look-card">
-      <h3>${l.nombre}</h3>
-      <div class="look-prendas">
-        ${l.prendas.map(p => `<span class="look-prenda-chip">${p.emoji || '👗'} ${p.nombre}</span>`).join('')}
-      </div>
-      ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">${l.contextos.join(' · ')}</div>` : ''}
-      <div class="look-card-footer">
-        <button class="btn btn-accent btn-sm" onclick="abrirAsignarDia(${l.id}, '${escapeStr(l.nombre)}')">📅 Asignar a día</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarLook(${l.id})">🗑 Eliminar</button>
-      </div>
-    </div>`).join('');
+
+  const grupos = { 'P/V': [], 'O/I': [], 'todo año': [] };
+  allLooks.forEach(l => { grupos[inferirTemporadaLook(l)].push(l); });
+
+  const secciones = [
+    { key: 'P/V',      label: '🌸 Primavera / Verano', cls: 'pv' },
+    { key: 'O/I',      label: '🍂 Otoño / Invierno',   cls: 'oi' },
+    { key: 'todo año', label: '✨ Todo el año',          cls: 'all' },
+  ];
+
+  container.innerHTML = secciones
+    .filter(s => grupos[s.key].length > 0)
+    .map(s => `
+      <div class="temporada-section">
+        <div class="temporada-header">
+          <span class="temporada-badge ${s.cls}">${s.label}</span>
+          <span class="temporada-count">${grupos[s.key].length} look${grupos[s.key].length > 1 ? 's' : ''}</span>
+        </div>
+        <div class="looks-grid">${grupos[s.key].map(lookCardHTML).join('')}</div>
+      </div>`).join('');
 }
 
 function escapeStr(s) { return s.replace(/'/g, "\\'"); }
