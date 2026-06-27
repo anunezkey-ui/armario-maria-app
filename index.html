@@ -375,6 +375,7 @@
     <div class="mode-toggle">
       <button class="mode-btn active" id="btn-modo-aleatorio" onclick="setModo('aleatorio')">🎲 Modo Aleatorio</button>
       <button class="mode-btn" id="btn-modo-manual" onclick="setModo('manual')">✏️ Modo Manual</button>
+      <button class="mode-btn" id="btn-modo-referencia" onclick="setModo('referencia')">📸 Desde Referencia</button>
     </div>
 
     <!-- ALEATORIO -->
@@ -452,6 +453,23 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- REFERENCIA -->
+    <div id="modo-referencia" style="display:none">
+      <div class="generator-panel">
+        <h3>Look desde foto de referencia</h3>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Sube una foto de inspiración y la app buscará en tu armario las prendas más parecidas.</p>
+        <div class="file-upload-area" id="ref-upload-area" onclick="document.getElementById('ref-foto-input').click()">
+          <input type="file" id="ref-foto-input" accept="image/*" style="display:none" onchange="onRefFotoSelected(event)" />
+          <div id="ref-upload-preview">
+            <div style="font-size:2rem;margin-bottom:8px">📸</div>
+            <div style="font-size:0.85rem;color:var(--muted)">Toca para subir foto de inspiración</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;width:100%" id="btn-analizar-ref" onclick="analizarReferencia()" disabled>✨ Analizar y buscar en armario</button>
+      </div>
+      <div id="ref-resultados"></div>
     </div>
 
     <hr class="divider" />
@@ -774,8 +792,10 @@ function setModo(modo) {
   modoActual = modo;
   document.getElementById('modo-aleatorio').style.display = modo === 'aleatorio' ? 'block' : 'none';
   document.getElementById('modo-manual').style.display = modo === 'manual' ? 'block' : 'none';
+  document.getElementById('modo-referencia').style.display = modo === 'referencia' ? 'block' : 'none';
   document.getElementById('btn-modo-aleatorio').classList.toggle('active', modo === 'aleatorio');
   document.getElementById('btn-modo-manual').classList.toggle('active', modo === 'manual');
+  document.getElementById('btn-modo-referencia').classList.toggle('active', modo === 'referencia');
   if (modo === 'manual') renderManualSelector();
 }
 
@@ -1320,6 +1340,103 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
+
+// ─── LOOK DESDE REFERENCIA ───────────────────────────────────────────────────
+let refFotoBase64 = null;
+let refFotoType = null;
+
+function onRefFotoSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  refFotoType = file.type;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    refFotoBase64 = e.target.result.split(',')[1];
+    const preview = document.getElementById('ref-upload-preview');
+    preview.innerHTML = `<img src="${e.target.result}" style="max-height:180px;border-radius:8px;object-fit:cover" />`;
+    document.getElementById('btn-analizar-ref').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analizarReferencia() {
+  if (!refFotoBase64) return;
+  const btn = document.getElementById('btn-analizar-ref');
+  btn.disabled = true;
+  btn.textContent = '⏳ Analizando…';
+  const resultados = document.getElementById('ref-resultados');
+  resultados.innerHTML = '';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZ2Z4YnljZ3lvd2V2Zm1jcWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODY1ODgsImV4cCI6MjA5ODA2MjU4OH0.VOcXSU8uLR0zMeXQLjkXrtSYfcJTGEvtrhQsybv4a1Y';
+
+    const res = await fetch('https://wngfxbycgyowevfmcqii.supabase.co/functions/v1/analizar-outfit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${anonKey}`,
+        'apikey': anonKey,
+      },
+      body: JSON.stringify({ imageBase64: refFotoBase64, imageType: refFotoType, prendas: allPrendas }),
+    });
+
+    const { prendas: detectadas, error } = await res.json();
+    if (error) throw new Error(error);
+
+    // Para cada prenda detectada buscar la mejor coincidencia en el armario
+    const matches = detectadas.map(d => {
+      const candidatas = allPrendas.filter(p => p.categoria === d.categoria);
+      if (!candidatas.length) return null;
+      // Scoring: color coincide +2, patron coincide +1
+      const scored = candidatas.map(p => ({
+        prenda: p,
+        score: (p.color === d.color ? 2 : 0) + (p.patron === d.patron ? 1 : 0)
+      })).sort((a, b) => b.score - a.score);
+      return { detectada: d, mejor: scored[0].prenda, alternativas: scored.slice(1, 3).map(s => s.prenda) };
+    }).filter(Boolean);
+
+    if (!matches.length) {
+      resultados.innerHTML = '<div class="empty-state"><p>No se encontraron prendas similares en tu armario.</p></div>';
+    } else {
+      resultados.innerHTML = `
+        <h3 style="font-family:'Playfair Display',serif;margin:24px 0 16px">Prendas encontradas en tu armario</h3>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          ${matches.map(m => `
+            <div style="background:var(--white);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
+              <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${m.detectada.categoria} · ${m.detectada.color} · ${m.detectada.patron}</div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="font-size:2rem">${m.mejor.emoji || emojiCat(m.mejor.categoria)}</div>
+                <div>
+                  <div style="font-weight:600">${m.mejor.nombre}</div>
+                  <div style="font-size:0.78rem;color:var(--muted)">${m.mejor.color} · ${m.mejor.patron}</div>
+                </div>
+                ${m.alternativas.length ? `<div style="margin-left:auto;font-size:0.75rem;color:var(--muted)">Alt: ${m.alternativas.map(a=>a.nombre).join(', ')}</div>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px;width:100%" onclick="guardarLookReferencia(${JSON.stringify(matches.map(m=>m.mejor.id)).replace(/"/g,"'")})">💾 Guardar como look</button>`;
+    }
+  } catch (e) {
+    resultados.innerHTML = `<div class="empty-state"><p>Error al analizar: ${e.message}</p></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ Analizar y buscar en armario';
+  }
+}
+
+function emojiCat(cat) {
+  return {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[cat] || '👗';
+}
+
+async function guardarLookReferencia(idsStr) {
+  const ids = idsStr.split(',').map(Number);
+  const prendas = ids.map(id => allPrendas.find(p => p.id === id)).filter(Boolean);
+  const look = {};
+  prendas.forEach(p => { look[p.categoria] = p; });
+  lookPendienteGuardar = look;
+  openModal('modal-guardar');
+}
 
 // ─── MALETAS ─────────────────────────────────────────────────────────────────
 let allMaletas = [];
