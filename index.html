@@ -637,6 +637,13 @@
       <label>Nombre de la maleta</label>
       <input type="text" id="nueva-maleta-nombre" placeholder="Ej: Viaje Roma junio" />
     </div>
+    <div class="form-group">
+      <label>Periodo (opcional)</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label style="font-size:0.75rem;color:var(--muted)">Desde</label><input type="date" id="nueva-maleta-inicio" /></div>
+        <div><label style="font-size:0.75rem;color:var(--muted)">Hasta</label><input type="date" id="nueva-maleta-fin" /></div>
+      </div>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-nueva-maleta')">Cancelar</button>
       <button class="btn btn-primary" onclick="crearMaleta()">Crear</button>
@@ -1328,6 +1335,16 @@ async function loadMaletas() {
   renderMaletas();
 }
 
+function fmtFecha(f) {
+  if (!f) return '';
+  const [y, m, d] = f.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function emojiCategoria(p) {
+  return p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗';
+}
+
 function renderMaletas() {
   const container = document.getElementById('lista-maletas');
   if (!container) return;
@@ -1335,29 +1352,65 @@ function renderMaletas() {
     container.innerHTML = '<div class="empty-state"><div class="icon">🧳</div><p>Todavía no hay maletas. Crea una o añade prendas desde el armario.</p></div>';
     return;
   }
-  container.innerHTML = allMaletas.map(m => `
+  container.innerHTML = allMaletas.map(m => {
+    const periodo = m.fecha_inicio && m.fecha_fin
+      ? `<span style="font-size:0.75rem;color:var(--muted);margin-left:10px">📅 ${fmtFecha(m.fecha_inicio)} – ${fmtFecha(m.fecha_fin)}</span>`
+      : '';
+    const tienePeriodo = m.fecha_inicio && m.fecha_fin;
+    const prendas = dedupPrendas(m.prendas);
+    return `
     <div class="maleta-card">
       <div class="maleta-card-header">
-        <h3>🧳 ${m.nombre}</h3>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+          <h3>🧳 ${m.nombre}</h3>${periodo}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${tienePeriodo ? `<button class="btn btn-secondary btn-sm" onclick="fusionarConLooks(${m.id})">⚡ Fusionar looks</button>` : ''}
           <button class="btn btn-secondary btn-sm" onclick="duplicarMaleta(${m.id})">Duplicar</button>
           <button class="btn btn-danger btn-sm" onclick="eliminarMaleta(${m.id})">Eliminar</button>
         </div>
       </div>
       <div class="maleta-card-body">
-        ${m.prendas.length
-          ? `<div class="maleta-prendas-grid">${m.prendas.map(p => `
+        ${prendas.length
+          ? `<div class="maleta-prendas-grid">${prendas.map(p => `
               <div class="maleta-prenda-chip">
-                <span class="emoji">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</span>
+                <span class="emoji">${emojiCategoria(p)}</span>
                 <span style="flex:1;font-size:0.75rem;line-height:1.2">${p.nombre}</span>
                 <span class="remove" onclick="quitarDeMaleta(${m.id},${p.id})">✕</span>
               </div>`).join('')}
             </div>`
           : '<p class="maleta-empty">Sin prendas aún — añade desde el Armario pulsando 🧳</p>'
         }
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">${m.prendas.length} prenda${m.prendas.length !== 1 ? 's' : ''}</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">${prendas.length} prenda${prendas.length !== 1 ? 's' : ''}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+function dedupPrendas(prendas) {
+  const seen = new Set();
+  return prendas.filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
+}
+
+async function fusionarConLooks(maletaId) {
+  const maleta = allMaletas.find(m => m.id === maletaId);
+  if (!maleta?.fecha_inicio || !maleta?.fecha_fin) return;
+  const inicio = maleta.fecha_inicio;
+  const fin = maleta.fecha_fin;
+  const fechasEnRango = Object.keys(calendario).filter(f => f >= inicio && f <= fin);
+  if (!fechasEnRango.length) return showToast('No hay looks en ese periodo', 'error');
+  const lookIds = [...new Set(fechasEnRango.flatMap(f => calendario[f].map(e => e.look_id)))];
+  const prendasIds = new Set();
+  lookIds.forEach(lid => {
+    const look = allLooks.find(l => l.id === lid);
+    if (!look) return;
+    CAPAS.forEach(cat => { if (look[cat]) prendasIds.add(look[cat].id || look[cat]); });
+  });
+  if (!prendasIds.size) return showToast('Los looks del periodo no tienen prendas registradas', 'error');
+  const items = [...prendasIds].map(pid => ({ maleta_id: maletaId, prenda_id: pid }));
+  await sb.from('maleta_items').upsert(items, { onConflict: 'maleta_id,prenda_id' });
+  await loadMaletas();
+  showToast(`Fusionados ${items.length} items del periodo`);
 }
 
 function openModalNuevaMaleta() {
@@ -1375,7 +1428,9 @@ function openModalNuevaMaletaDesde() {
 async function crearMaleta() {
   const nombre = document.getElementById('nueva-maleta-nombre').value.trim();
   if (!nombre) return showToast('Escribe un nombre para la maleta', 'error');
-  const { data, error } = await sb.from('maletas').insert({ nombre }).select().single();
+  const fecha_inicio = document.getElementById('nueva-maleta-inicio').value || null;
+  const fecha_fin = document.getElementById('nueva-maleta-fin').value || null;
+  const { data, error } = await sb.from('maletas').insert({ nombre, fecha_inicio, fecha_fin }).select().single();
   if (error) return showToast('Error al crear maleta', 'error');
   closeModal('modal-nueva-maleta');
   if (maletaPrendaIdPendiente) {
