@@ -595,7 +595,14 @@ async function init() {
 
 async function seedIfEmpty() {
   const { count } = await sb.from('prendas').select('*', { count: 'exact', head: true });
-  if (count === 0) await sb.from('prendas').insert(SEMILLA);
+  if (count === 0) {
+    await sb.from('prendas').insert(SEMILLA);
+  } else {
+    const { data: existentes } = await sb.from('prendas').select('categoria');
+    const cats = new Set((existentes || []).map(p => p.categoria));
+    const nuevas = SEMILLA.filter(p => !cats.has(p.categoria));
+    if (nuevas.length > 0) await sb.from('prendas').insert(nuevas);
+  }
 }
 
 async function loadPrendas() {
