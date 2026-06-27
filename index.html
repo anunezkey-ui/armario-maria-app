@@ -430,6 +430,9 @@
             <div class="capa-slot" id="slot-pantalon"><span style="color:var(--muted);font-size:0.82rem">Pantalón</span></div>
             <div class="capa-slot" id="slot-falda"><span style="color:var(--muted);font-size:0.82rem">Falda</span></div>
             <div class="capa-slot" id="slot-vestido"><span style="color:var(--muted);font-size:0.82rem">Vestido</span></div>
+            <div class="capa-slot" id="slot-zapatos"><span style="color:var(--muted);font-size:0.82rem">Zapatos</span></div>
+            <div class="capa-slot" id="slot-bolso"><span style="color:var(--muted);font-size:0.82rem">Bolso</span></div>
+            <div class="capa-slot" id="slot-accesorio"><span style="color:var(--muted);font-size:0.82rem">Accesorio</span></div>
             <div class="warning-box warning-estampado" id="warning-estampado">⚠️ Máximo 1 prenda estampada por look.</div>
             <div style="margin-top:16px">
               <button class="btn btn-primary" style="width:100%" onclick="abrirModalGuardar(null)">💾 Guardar Look</button>
@@ -627,8 +630,8 @@ let lookIdParaAsignar = null;
 let calFechaSeleccionada = null;
 let looksGeneradosCache = [];
 
-const CAPAS = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido'];
-const CAPA_LABELS = { chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido' };
+const CAPAS = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'zapatos', 'bolso', 'accesorio'];
+const CAPA_LABELS = { chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
 
 const SEMILLA = [
   { nombre: 'Blazer beige', categoria: 'chaqueta', contextos: ['oficina','casual'], temporada: 'todo año', color: 'beige', patron: 'liso', emoji: '🧥' },
