@@ -717,7 +717,7 @@ async function init() {
   setupFilterListeners();
   setupCheckboxChips();
   await seedIfEmpty();
-  await Promise.all([loadPrendas(), loadLooks(), loadCalendario()]);
+  await Promise.all([loadPrendas(), loadLooks(), loadCalendario(), loadMaletas()]);
 }
 
 async function seedIfEmpty() {
@@ -826,7 +826,7 @@ function prendaCardHTML(p, selectable) {
     : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</div>`;
   const actions = selectable
     ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
-    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
+    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
   return `<div class="prenda-card ${selected ? 'selected' : ''}">${imgHTML}
     <div class="prenda-info">
       <div class="prenda-nombre">${p.nombre}</div>
@@ -1313,6 +1313,130 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
+
+// ─── MALETAS ─────────────────────────────────────────────────────────────────
+let allMaletas = [];
+let maletaPrendaIdPendiente = null;
+
+async function loadMaletas() {
+  const { data: maletas } = await sb.from('maletas').select('*').order('created_at', { ascending: false });
+  const { data: items } = await sb.from('maleta_items').select('*');
+  allMaletas = (maletas || []).map(m => ({
+    ...m,
+    prendas: (items || []).filter(i => i.maleta_id === m.id).map(i => allPrendas.find(p => p.id === i.prenda_id)).filter(Boolean)
+  }));
+  renderMaletas();
+}
+
+function renderMaletas() {
+  const container = document.getElementById('lista-maletas');
+  if (!container) return;
+  if (!allMaletas.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🧳</div><p>Todavía no hay maletas. Crea una o añade prendas desde el armario.</p></div>';
+    return;
+  }
+  container.innerHTML = allMaletas.map(m => `
+    <div class="maleta-card">
+      <div class="maleta-card-header">
+        <h3>🧳 ${m.nombre}</h3>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="duplicarMaleta(${m.id})">Duplicar</button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarMaleta(${m.id})">Eliminar</button>
+        </div>
+      </div>
+      <div class="maleta-card-body">
+        ${m.prendas.length
+          ? `<div class="maleta-prendas-grid">${m.prendas.map(p => `
+              <div class="maleta-prenda-chip">
+                <span class="emoji">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</span>
+                <span style="flex:1;font-size:0.75rem;line-height:1.2">${p.nombre}</span>
+                <span class="remove" onclick="quitarDeMaleta(${m.id},${p.id})">✕</span>
+              </div>`).join('')}
+            </div>`
+          : '<p class="maleta-empty">Sin prendas aún — añade desde el Armario pulsando 🧳</p>'
+        }
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">${m.prendas.length} prenda${m.prendas.length !== 1 ? 's' : ''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openModalNuevaMaleta() {
+  document.getElementById('nueva-maleta-nombre').value = '';
+  maletaPrendaIdPendiente = null;
+  openModal('modal-nueva-maleta');
+}
+
+function openModalNuevaMaletaDesde() {
+  closeModal('modal-añadir-maleta');
+  document.getElementById('nueva-maleta-nombre').value = '';
+  openModal('modal-nueva-maleta');
+}
+
+async function crearMaleta() {
+  const nombre = document.getElementById('nueva-maleta-nombre').value.trim();
+  if (!nombre) return showToast('Escribe un nombre para la maleta', 'error');
+  const { data, error } = await sb.from('maletas').insert({ nombre }).select().single();
+  if (error) return showToast('Error al crear maleta', 'error');
+  closeModal('modal-nueva-maleta');
+  if (maletaPrendaIdPendiente) {
+    await añadirPrendaAMaleta(data.id, maletaPrendaIdPendiente);
+    maletaPrendaIdPendiente = null;
+  }
+  await loadMaletas();
+  showToast(`Maleta "${nombre}" creada`);
+}
+
+function openModalAñadirMaleta(prendaId) {
+  maletaPrendaIdPendiente = prendaId;
+  const prenda = allPrendas.find(p => p.id === prendaId);
+  document.getElementById('modal-maleta-prenda-titulo').textContent = `Añadir "${prenda?.nombre}" a maleta`;
+  const lista = document.getElementById('maleta-selector-lista');
+  if (!allMaletas.length) {
+    lista.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">No hay maletas todavía.</p>';
+  } else {
+    lista.innerHTML = allMaletas.map(m => `
+      <button class="btn btn-secondary" style="justify-content:flex-start;gap:10px" onclick="añadirPrendaAMaletaYCerrar(${m.id},${prendaId})">
+        🧳 ${m.nombre} <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">${m.prendas.length} prendas</span>
+      </button>`).join('');
+  }
+  openModal('modal-añadir-maleta');
+}
+
+async function añadirPrendaAMaletaYCerrar(maletaId, prendaId) {
+  closeModal('modal-añadir-maleta');
+  await añadirPrendaAMaleta(maletaId, prendaId);
+}
+
+async function añadirPrendaAMaleta(maletaId, prendaId) {
+  const { error } = await sb.from('maleta_items').upsert({ maleta_id: maletaId, prenda_id: prendaId }, { onConflict: 'maleta_id,prenda_id' });
+  if (error) return showToast('Ya está en esa maleta', 'error');
+  await loadMaletas();
+  const maleta = allMaletas.find(m => m.id === maletaId);
+  showToast(`Añadida a "${maleta?.nombre}"`);
+}
+
+async function quitarDeMaleta(maletaId, prendaId) {
+  await sb.from('maleta_items').delete().eq('maleta_id', maletaId).eq('prenda_id', prendaId);
+  await loadMaletas();
+}
+
+async function eliminarMaleta(id) {
+  if (!confirm('¿Eliminar esta maleta?')) return;
+  await sb.from('maletas').delete().eq('id', id);
+  await loadMaletas();
+  showToast('Maleta eliminada');
+}
+
+async function duplicarMaleta(id) {
+  const original = allMaletas.find(m => m.id === id);
+  if (!original) return;
+  const { data: nueva } = await sb.from('maletas').insert({ nombre: original.nombre + ' (copia)' }).select().single();
+  if (nueva && original.prendas.length) {
+    await sb.from('maleta_items').insert(original.prendas.map(p => ({ maleta_id: nueva.id, prenda_id: p.id })));
+  }
+  await loadMaletas();
+  showToast(`Maleta duplicada`);
+}
 
 let toastTimer;
 function showToast(msg, type = '') {
