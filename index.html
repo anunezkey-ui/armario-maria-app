@@ -54,6 +54,18 @@
     .filter-chip:hover:not(.active) { color: var(--carbon); }
     .filter-separator { width: 1px; background: var(--border); margin: 0 4px; }
 
+    /* MALETAS */
+    .maleta-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+    .maleta-card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .maleta-card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+    .maleta-card-body { padding: 16px 20px; }
+    .maleta-prendas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .maleta-prenda-chip { background: var(--bg); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; border: 1px solid var(--border); }
+    .maleta-prenda-chip .emoji { font-size: 1.3rem; }
+    .maleta-prenda-chip .remove { margin-left: auto; cursor: pointer; color: var(--muted); font-size: 0.75rem; }
+    .maleta-prenda-chip .remove:hover { color: var(--danger); }
+    .maleta-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
     /* HERO */
     .armario-hero {
       background: repeating-linear-gradient(90deg, #1a2744 0px, #1a2744 28px, #ffffff 28px, #ffffff 56px);
@@ -80,7 +92,7 @@
       width: 100px;
       height: 100px;
       border-radius: 50%;
-      background: url('./assets/maria.jpg') center 8% / 280% no-repeat;
+      background: url('./assets/maria.jpg') center 22% / 280% no-repeat;
       border: 3px solid #ffffff;
       box-shadow: 0 4px 16px rgba(26,39,68,0.3);
       flex-shrink: 0;
@@ -298,6 +310,7 @@
   <button class="active" onclick="showView('armario', this)">👗 Armario</button>
   <button onclick="showView('looks', this)">✨ Looks</button>
   <button onclick="showView('calendario', this)">📅 Calendario</button>
+  <button onclick="showView('maletas', this)">🧳 Maletas</button>
 </nav>
 
 <main>
@@ -480,6 +493,15 @@
     </div>
   </div>
 
+  <!-- ───── MALETAS ───── -->
+  <div id="view-maletas" class="view">
+    <div class="section-header">
+      <h2 class="section-title">🧳 Mis Maletas</h2>
+      <button class="btn btn-primary" onclick="openModalNuevaMaleta()">+ Nueva Maleta</button>
+    </div>
+    <div id="lista-maletas"></div>
+  </div>
+
 </main>
 
 <!-- ───── MODAL: AÑADIR PRENDA ───── -->
@@ -603,6 +625,33 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-calendario')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ───── MODAL: NUEVA MALETA ───── -->
+<div class="modal-overlay" id="modal-nueva-maleta">
+  <div class="modal" style="max-width:400px">
+    <h2>Nueva Maleta</h2>
+    <div class="form-group">
+      <label>Nombre de la maleta</label>
+      <input type="text" id="nueva-maleta-nombre" placeholder="Ej: Viaje Roma junio" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-nueva-maleta')">Cancelar</button>
+      <button class="btn btn-primary" onclick="crearMaleta()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- ───── MODAL: AÑADIR A MALETA ───── -->
+<div class="modal-overlay" id="modal-añadir-maleta">
+  <div class="modal" style="max-width:400px">
+    <h2 id="modal-maleta-prenda-titulo">Añadir a maleta</h2>
+    <div id="maleta-selector-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+    <button class="btn btn-secondary" style="width:100%;margin-bottom:4px" onclick="openModalNuevaMaletaDesde()">+ Crear nueva maleta</button>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-añadir-maleta')">Cancelar</button>
     </div>
   </div>
 </div>
