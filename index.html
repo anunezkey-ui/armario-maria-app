@@ -569,6 +569,14 @@ const SEMILLA = [
   { nombre: 'Falda plisada verde', categoria: 'falda', contextos: ['casual','noche'], temporada: 'P/V', color: 'verde', patron: 'liso', emoji: '👗' },
   { nombre: 'Vestido negro clásico', categoria: 'vestido', contextos: ['noche','oficina'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👗' },
   { nombre: 'Vestido floral verano', categoria: 'vestido', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌺' },
+  { nombre: 'Salones negros tacón', categoria: 'zapatos', contextos: ['oficina','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👠' },
+  { nombre: 'Sneakers blancos', categoria: 'zapatos', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'blanco', patron: 'liso', emoji: '👟' },
+  { nombre: 'Botines camel', categoria: 'zapatos', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '👢' },
+  { nombre: 'Sandalias nude', categoria: 'zapatos', contextos: ['casual','noche'], temporada: 'P/V', color: 'nude', patron: 'liso', emoji: '👡' },
+  { nombre: 'Collar dorado delicado', categoria: 'accesorio', contextos: ['oficina','casual','noche'], temporada: 'todo año', color: 'dorado', patron: 'liso', emoji: '📿' },
+  { nombre: 'Pendientes aro plata', categoria: 'accesorio', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'plata', patron: 'liso', emoji: '💍' },
+  { nombre: 'Bolso camel estructura', categoria: 'accesorio', contextos: ['oficina','casual'], temporada: 'todo año', color: 'camel', patron: 'liso', emoji: '👜' },
+  { nombre: 'Cinturón negro fino', categoria: 'accesorio', contextos: ['oficina','casual','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👛' },
 ];
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
@@ -675,7 +683,7 @@ function prendaCardHTML(p, selectable) {
   const selected = lookBuilder[p.categoria]?.id === p.id;
   const imgHTML = p.imagen_url
     ? `<div class="prenda-img"><img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy" /></div>`
-    : `<div class="prenda-img">${p.emoji || '👗'}</div>`;
+    : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍'}[p.categoria] || '👗'}</div>`;
   const actions = selectable
     ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
     : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
