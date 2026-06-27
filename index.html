@@ -1430,12 +1430,14 @@ async function eliminarMaleta(id) {
 async function duplicarMaleta(id) {
   const original = allMaletas.find(m => m.id === id);
   if (!original) return;
-  const { data: nueva } = await sb.from('maletas').insert({ nombre: original.nombre + ' (copia)' }).select().single();
+  const nombre = prompt('Nombre para la nueva maleta:', original.nombre + ' (copia)');
+  if (!nombre || !nombre.trim()) return;
+  const { data: nueva } = await sb.from('maletas').insert({ nombre: nombre.trim() }).select().single();
   if (nueva && original.prendas.length) {
     await sb.from('maleta_items').insert(original.prendas.map(p => ({ maleta_id: nueva.id, prenda_id: p.id })));
   }
   await loadMaletas();
-  showToast(`Maleta duplicada`);
+  showToast(`Maleta "${nombre.trim()}" creada`);
 }
 
 let toastTimer;
