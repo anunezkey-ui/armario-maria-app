@@ -265,6 +265,7 @@
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="zapatos">Zapatos</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="accesorio">Accesorios</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bolso">Bolsos</button>
+        <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bano">Baño</button>
       </div>
       <div class="filter-separator"></div>
       <div class="filter-group">
@@ -345,6 +346,7 @@
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="zapatos">Zapatos</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="accesorio">Accesorios</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="bolso">Bolsos</button>
+              <button class="filter-chip" data-filter="capa" data-view="manual" data-value="bano">Baño</button>
             </div>
           </div>
           <div id="grid-manual-selector" class="grid-prendas"></div>
@@ -426,6 +428,7 @@
           <option value="accesorio">Accesorio</option>
           <option value="zapatos">Zapatos</option>
           <option value="bolso">Bolso</option>
+          <option value="bano">Baño</option>
         </select>
       </div>
       <div class="form-group">
@@ -583,6 +586,9 @@ const SEMILLA = [
   { nombre: 'Bolso camel estructura', categoria: 'bolso', contextos: ['oficina','casual'], temporada: 'todo año', color: 'camel', patron: 'liso', emoji: '👜' },
   { nombre: 'Bolso negro noche', categoria: 'bolso', contextos: ['noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👛' },
   { nombre: 'Mochila cuero marrón', categoria: 'bolso', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'marrón', patron: 'liso', emoji: '🎒' },
+  { nombre: 'Bañador negro', categoria: 'bano', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'negro', patron: 'liso', emoji: '🩱' },
+  { nombre: 'Pareo estampado', categoria: 'bano', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🏖️' },
+  { nombre: 'Neceser viaje', categoria: 'bano', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '🧴' },
 ];
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
@@ -696,7 +702,7 @@ function prendaCardHTML(p, selectable) {
   const selected = lookBuilder[p.categoria]?.id === p.id;
   const imgHTML = p.imagen_url
     ? `<div class="prenda-img"><img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy" /></div>`
-    : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜'}[p.categoria] || '👗'}</div>`;
+    : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</div>`;
   const actions = selectable
     ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
     : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
@@ -1101,7 +1107,7 @@ function generarMaleta() {
     porCategoria[cat].push({ prenda, usos });
   });
 
-  const ordenCat = ['chaqueta','vestido','top','pantalon','falda','zapatos','bolso','accesorio'];
+  const ordenCat = ['chaqueta','vestido','top','pantalon','falda','zapatos','bolso','accesorio','bano'];
   const categoriasOrdenadas = [...new Set([...ordenCat, ...Object.keys(porCategoria)])].filter(c => porCategoria[c]);
 
   const dias = Math.round((fin - new Date(desde)) / 86400000) + 1;
