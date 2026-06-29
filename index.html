@@ -686,10 +686,9 @@
 
 <script>
 const { createClient } = supabase;
-const sb = createClient(
-  'https://wngfxbycgyowevfmcqii.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZ2Z4YnljZ3lvd2V2Zm1jcWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODY1ODgsImV4cCI6MjA5ODA2MjU4OH0.VOcXSU8uLR0zMeXQLjkXrtSYfcJTGEvtrhQsybv4a1Y'
-);
+const SUPABASE_URL = 'https://wngfxbycgyowevfmcqii.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZ2Z4YnljZ3lvd2V2Zm1jcWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODY1ODgsImV4cCI6MjA5ODA2MjU4OH0.VOcXSU8uLR0zMeXQLjkXrtSYfcJTGEvtrhQsybv4a1Y';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 let allPrendas = [], allLooks = [];
@@ -1316,9 +1315,34 @@ async function submitPrenda(e) {
   let imagen_url = null;
   const fileInput = document.getElementById('prenda-imagen');
   if (fileInput.files[0]) {
-    const file = fileInput.files[0], ext = file.name.split('.').pop(), path = `${Date.now()}.${ext}`;
-    const { error: upErr } = await sb.storage.from('prendas').upload(path, file, { upsert: true });
-    if (!upErr) { const { data } = sb.storage.from('prendas').getPublicUrl(path); imagen_url = data.publicUrl; }
+    const file = fileInput.files[0];
+    btn.textContent = 'Recortando fondo…';
+    try {
+      const base64 = await new Promise(res => {
+        const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.readAsDataURL(file);
+      });
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/recortar-fondo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ imageBase64: base64, imageType: file.type })
+      });
+      const data = await resp.json();
+      if (data.outputUrl) {
+        // Download the result and upload to storage
+        btn.textContent = 'Subiendo…';
+        const imgResp = await fetch(data.outputUrl);
+        const blob = await imgResp.blob();
+        const path = `${Date.now()}.png`;
+        const { error: upErr } = await sb.storage.from('prendas').upload(path, blob, { upsert: true, contentType: 'image/png' });
+        if (!upErr) { const { data: urlData } = sb.storage.from('prendas').getPublicUrl(path); imagen_url = urlData.publicUrl; }
+      }
+    } catch(err) {
+      console.warn('Recorte fallido, subiendo original:', err);
+      const ext = file.name.split('.').pop(), path = `${Date.now()}.${ext}`;
+      const { error: upErr } = await sb.storage.from('prendas').upload(path, file, { upsert: true });
+      if (!upErr) { const { data: urlData } = sb.storage.from('prendas').getPublicUrl(path); imagen_url = urlData.publicUrl; }
+    }
+    btn.textContent = 'Guardando…';
   }
   const { error } = await sb.from('prendas').insert([{
     nombre: document.getElementById('prenda-nombre').value,
