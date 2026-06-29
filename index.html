@@ -1084,7 +1084,7 @@ function lookCardHTML(l) {
     ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">${l.contextos.join(' · ')}</div>` : ''}
     <div class="look-card-footer">
       <button class="btn btn-accent btn-sm" onclick="abrirAsignarDia(${l.id}, '${escapeStr(l.nombre)}')">📅 Asignar a día</button>
-      <button class="btn btn-primary btn-sm" onclick="verLookEnAvatar(${l.id})">👗 Ver en avatar</button>
+      <button class="btn btn-primary btn-sm" onclick="verLookEnAvatar(${l.id})">📷 Ver en avatar</button>
       <button class="btn btn-danger btn-sm" onclick="eliminarLook(${l.id})">🗑 Eliminar</button>
     </div>
   </div>`;
