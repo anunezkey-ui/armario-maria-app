@@ -357,8 +357,9 @@
       </div>
       <div class="filter-separator"></div>
       <div class="filter-group">
-        <button class="filter-chip active" data-filter="patron" data-view="armario" data-value="all">Liso / Est.</button>
+        <button class="filter-chip active" data-filter="patron" data-view="armario" data-value="all">Todos</button>
         <button class="filter-chip" data-filter="patron" data-view="armario" data-value="liso">Liso</button>
+        <button class="filter-chip" data-filter="patron" data-view="armario" data-value="rayas">Rayas</button>
         <button class="filter-chip" data-filter="patron" data-view="armario" data-value="estampado">Estampado</button>
       </div>
     </div>
@@ -567,6 +568,7 @@
         <select id="prenda-patron" required>
           <option value="">Selecciona…</option>
           <option value="liso">Liso</option>
+          <option value="rayas">Rayas</option>
           <option value="estampado">Estampado</option>
         </select>
       </div>
@@ -712,7 +714,7 @@ const SEMILLA = [
   { nombre: 'Trenca camel', categoria: 'chaqueta', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '🧥' },
   { nombre: 'Camisa blanca Oxford', categoria: 'top', contextos: ['oficina','casual'], temporada: 'todo año', color: 'blanco', patron: 'liso', emoji: '👔' },
   { nombre: 'Top seda negro', categoria: 'top', contextos: ['noche','oficina'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👚' },
-  { nombre: 'Camiseta rayas azules', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'azul', patron: 'estampado', emoji: '👕' },
+  { nombre: 'Camiseta rayas azules', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'azul', patron: 'rayas', emoji: '👕' },
   { nombre: 'Blusa floral estampada', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌸' },
   { nombre: 'Pantalón negro sastre', categoria: 'pantalon', contextos: ['oficina','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👖' },
   { nombre: 'Pantalón camel ancho', categoria: 'pantalon', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '👖' },
@@ -1293,7 +1295,8 @@ function openModalPrenda() {
 
 function setupCheckboxChips() {
   document.querySelectorAll('.checkbox-chip').forEach(chip => {
-    chip.addEventListener('click', function() {
+    chip.addEventListener('click', function(e) {
+      e.preventDefault();
       this.classList.toggle('checked');
       this.querySelector('input').checked = this.classList.contains('checked');
     });
