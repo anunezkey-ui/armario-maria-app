@@ -547,10 +547,10 @@
       <div class="form-group">
         <label>Contextos *</label>
         <div class="checkbox-group" id="prenda-contextos">
-          <label class="checkbox-chip"><input type="checkbox" value="oficina"> Oficina</label>
-          <label class="checkbox-chip"><input type="checkbox" value="casual"> Casual</label>
-          <label class="checkbox-chip"><input type="checkbox" value="noche"> Noche</label>
-          <label class="checkbox-chip"><input type="checkbox" value="fin de semana"> Fin de semana</label>
+          <div class="checkbox-chip" data-value="oficina">Oficina</div>
+          <div class="checkbox-chip" data-value="casual">Casual</div>
+          <div class="checkbox-chip" data-value="noche">Noche</div>
+          <div class="checkbox-chip" data-value="fin de semana">Fin de semana</div>
         </div>
       </div>
       <div class="form-group">
@@ -1294,11 +1294,9 @@ function openModalPrenda() {
 }
 
 function setupCheckboxChips() {
-  document.querySelectorAll('.checkbox-chip').forEach(chip => {
-    chip.addEventListener('click', function(e) {
-      e.preventDefault();
+  document.querySelectorAll('#prenda-contextos .checkbox-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
       this.classList.toggle('checked');
-      this.querySelector('input').checked = this.classList.contains('checked');
     });
   });
 }
@@ -1314,7 +1312,7 @@ async function submitPrenda(e) {
   e.preventDefault();
   const btn = document.getElementById('btn-submit-prenda');
   btn.disabled = true; btn.textContent = 'Guardando…';
-  const contextos = [...document.querySelectorAll('#prenda-contextos input:checked')].map(i => i.value);
+  const contextos = [...document.querySelectorAll('#prenda-contextos .checkbox-chip.checked')].map(c => c.dataset.value);
   if (!contextos.length) { showToast('Selecciona al menos un contexto', 'error'); btn.disabled = false; btn.textContent = 'Guardar'; return; }
   let imagen_url = null;
   const fileInput = document.getElementById('prenda-imagen');
