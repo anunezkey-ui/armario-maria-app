@@ -1327,17 +1327,21 @@ async function submitPrenda(e) {
         body: JSON.stringify({ imageBase64: base64, imageType: file.type })
       });
       const data = await resp.json();
+      if (data.error) throw new Error('Replicate: ' + data.error);
       if (data.outputUrl) {
-        // Download the result and upload to storage
         btn.textContent = 'Subiendo…';
         const imgResp = await fetch(data.outputUrl);
         const blob = await imgResp.blob();
         const path = `${Date.now()}.png`;
         const { error: upErr } = await sb.storage.from('prendas').upload(path, blob, { upsert: true, contentType: 'image/png' });
-        if (!upErr) { const { data: urlData } = sb.storage.from('prendas').getPublicUrl(path); imagen_url = urlData.publicUrl; }
+        if (upErr) throw new Error('Storage: ' + upErr.message);
+        const { data: urlData } = sb.storage.from('prendas').getPublicUrl(path);
+        imagen_url = urlData.publicUrl;
+      } else {
+        throw new Error('Sin outputUrl: ' + JSON.stringify(data));
       }
     } catch(err) {
-      console.warn('Recorte fallido, subiendo original:', err);
+      showToast('Recorte: ' + err.message + ' — subiendo original', 'error');
       const ext = file.name.split('.').pop(), path = `${Date.now()}.${ext}`;
       const { error: upErr } = await sb.storage.from('prendas').upload(path, file, { upsert: true });
       if (!upErr) { const { data: urlData } = sb.storage.from('prendas').getPublicUrl(path); imagen_url = urlData.publicUrl; }
