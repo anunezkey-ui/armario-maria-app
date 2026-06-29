@@ -572,7 +572,6 @@
           <option value="estampado">Estampado</option>
         </select>
       </div>
-      <div class="form-group"><label>Emoji (opcional)</label><input type="text" id="prenda-emoji" placeholder="Ej: 👗" maxlength="2" /></div>
       <div class="form-group">
         <label>Foto (opcional)</label>
         <div class="file-upload-area" id="upload-area" onclick="document.getElementById('prenda-imagen').click()">
@@ -1327,10 +1326,10 @@ async function submitPrenda(e) {
     contextos, temporada: document.getElementById('prenda-temporada').value,
     color: document.getElementById('prenda-color').value,
     patron: document.getElementById('prenda-patron').value,
-    emoji: document.getElementById('prenda-emoji').value || null, imagen_url
+    imagen_url
   }]);
   btn.disabled = false; btn.textContent = 'Guardar';
-  if (error) { showToast('Error al guardar', 'error'); return; }
+  if (error) { console.error('Error guardar prenda:', error); showToast('Error al guardar: ' + error.message, 'error'); return; }
   showToast('Prenda añadida ✓', 'success');
   closeModal('modal-prenda'); await loadPrendas();
 }
