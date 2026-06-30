@@ -899,9 +899,21 @@ function actualizarFiltrosSubtipo(categoria) {
   }
 }
 
+const COLOR_LUMINOSIDAD = ['blanco','crema','beige','marfil','nude','rosa claro','lavanda','celeste','amarillo','rosa','coral','naranja','rojo','verde claro','menta','turquesa','azul claro','lila','morado','verde','azul','verde oscuro','azul marino','burdeos','granate','marrón','camel','tostado','gris claro','gris','gris oscuro','negro'];
+
+function ordenarPrendas(prendas) {
+  const catOrder = ['chaqueta','top','pantalon','falda','vestido','zapatos','bolso','accesorio','bano','deporte'];
+  return [...prendas].sort((a, b) => {
+    const ca = catOrder.indexOf(a.categoria), cb = catOrder.indexOf(b.categoria);
+    if (ca !== cb) return (ca === -1 ? 99 : ca) - (cb === -1 ? 99 : cb);
+    const la = COLOR_LUMINOSIDAD.indexOf(a.color?.toLowerCase()), lb = COLOR_LUMINOSIDAD.indexOf(b.color?.toLowerCase());
+    return (la === -1 ? 99 : la) - (lb === -1 ? 99 : lb);
+  });
+}
+
 function renderArmario() {
   const container = document.getElementById('grid-prendas');
-  const filtered = filtrarPrendas(allPrendas, getArmarioFiltros());
+  const filtered = ordenarPrendas(filtrarPrendas(allPrendas, getArmarioFiltros()));
   container.innerHTML = filtered.length
     ? filtered.map(p => prendaCardHTML(p, false)).join('')
     : '<div class="empty-state"><div class="icon">👗</div><p>No hay prendas con estos filtros.</p></div>';
