@@ -339,6 +339,7 @@
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="top">Tops</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="pantalon">Pantalones</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="falda">Faldas</button>
+        <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="conjunto">Conjuntos</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="vestido">Vestidos</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="zapatos">Zapatos</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="accesorio">Accesorios</button>
@@ -427,6 +428,7 @@
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="top">Tops</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="pantalon">Pantalones</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="falda">Faldas</button>
+              <button class="filter-chip" data-filter="capa" data-view="manual" data-value="conjunto">Conjuntos</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="vestido">Vestidos</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="zapatos">Zapatos</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="accesorio">Accesorios</button>
@@ -441,6 +443,7 @@
           <div class="capas-panel">
             <h3>Tu Look</h3>
             <span class="capa-label">Capas seleccionadas</span>
+            <div class="capa-slot" id="slot-conjunto"><span style="color:var(--muted);font-size:0.82rem">Conjunto / Traje</span></div>
             <div class="capa-slot" id="slot-chaqueta"><span style="color:var(--muted);font-size:0.82rem">Chaqueta / Abrigo</span></div>
             <div class="capa-slot" id="slot-top"><span style="color:var(--muted);font-size:0.82rem">Top / Camisa</span></div>
             <div class="capa-slot" id="slot-pantalon"><span style="color:var(--muted);font-size:0.82rem">Pantalón</span></div>
@@ -543,6 +546,7 @@
           <option value="top">Top / Camisa / Camiseta</option>
           <option value="pantalon">Pantalón</option>
           <option value="falda">Falda</option>
+          <option value="conjunto">Conjunto / Traje</option>
           <option value="vestido">Vestido</option>
           <option value="accesorio">Accesorio</option>
           <option value="zapatos">Zapatos</option>
@@ -752,8 +756,8 @@ let lookIdParaAsignar = null;
 let calFechaSeleccionada = null;
 let looksGeneradosCache = [];
 
-const CAPAS = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'bano', 'deporte', 'zapatos', 'bolso', 'accesorio'];
-const CAPA_LABELS = { chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', bano: 'Baño', deporte: 'Deporte', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
+const CAPAS = ['conjunto', 'chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'bano', 'deporte', 'zapatos', 'bolso', 'accesorio'];
+const CAPA_LABELS = { conjunto: 'Conjunto / Traje', chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', bano: 'Baño', deporte: 'Deporte', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
 
 const SEMILLA = [
   { nombre: 'Blazer beige', categoria: 'chaqueta', contextos: ['oficina','casual'], temporada: 'todo año', color: 'beige', patron: 'liso', emoji: '🧥' },
@@ -919,7 +923,7 @@ function actualizarFiltrosSubtipo(categoria) {
 const COLOR_LUMINOSIDAD = ['blanco','crema','beige','marfil','nude','rosa claro','lavanda','celeste','amarillo','rosa','coral','naranja','rojo','verde claro','menta','turquesa','azul claro','lila','morado','verde','azul','verde oscuro','azul marino','burdeos','granate','marrón','camel','tostado','gris claro','gris','gris oscuro','negro'];
 
 function ordenarPrendas(prendas) {
-  const catOrder = ['chaqueta','top','pantalon','falda','vestido','zapatos','bolso','accesorio','bano','deporte'];
+  const catOrder = ['conjunto','chaqueta','top','pantalon','falda','vestido','zapatos','bolso','accesorio','bano','deporte'];
   return [...prendas].sort((a, b) => {
     const ca = catOrder.indexOf(a.categoria), cb = catOrder.indexOf(b.categoria);
     if (ca !== cb) return (ca === -1 ? 99 : ca) - (cb === -1 ? 99 : cb);
@@ -1016,10 +1020,21 @@ function renderManualSelector() {
     : '<div class="empty-state"><div class="icon">👗</div><p>Sin prendas en esta categoría.</p></div>';
 }
 
+const CONJUNTO_INCOMPATIBLES = ['chaqueta', 'top', 'pantalon', 'falda'];
+
 function toggleLookBuilder(id) {
   const p = allPrendas.find(p => p.id === id); if (!p) return;
-  if (lookBuilder[p.categoria]?.id === id) delete lookBuilder[p.categoria];
-  else lookBuilder[p.categoria] = p;
+  if (lookBuilder[p.categoria]?.id === id) {
+    delete lookBuilder[p.categoria];
+  } else {
+    // Conjunto desplaza chaqueta/top/pantalón/falda y viceversa
+    if (p.categoria === 'conjunto') {
+      CONJUNTO_INCOMPATIBLES.forEach(c => delete lookBuilder[c]);
+    } else if (CONJUNTO_INCOMPATIBLES.includes(p.categoria)) {
+      delete lookBuilder['conjunto'];
+    }
+    lookBuilder[p.categoria] = p;
+  }
   updateCapasPanel(); renderManualSelector();
 }
 
