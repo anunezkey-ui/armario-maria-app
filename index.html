@@ -1092,10 +1092,10 @@ function onCategoriaChange(val) {
 function limpiarLookBuilder() { lookBuilder = {}; updateCapasPanel(); renderManualSelector(); }
 
 async function verLookBuilderEnAvatar() {
-  const ids = Object.values(lookBuilder).filter(Boolean).map(p => p.id);
+  const ids = Object.values(lookBuilder).filter(Boolean).map(p => Number(p.id));
   if (!ids.length) return showToast('Añade al menos una prenda al look');
   await loadPrendas();
-  const prendas = allPrendas.filter(p => ids.includes(p.id));
+  const prendas = allPrendas.filter(p => ids.includes(Number(p.id)));
   await _verPrendasEnAvatar(prendas);
 }
 
