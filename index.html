@@ -984,6 +984,7 @@ function generarLooks() {
         </div>`).join('')}</div>
       <div class="look-card-actions">
         <button class="btn btn-primary btn-sm" onclick="abrirModalGuardar(${i})">💾 Guardar este look</button>
+        <button class="btn btn-secondary btn-sm" onclick="editarLookGenerado(${i})">✏️ Editar</button>
         <button class="btn btn-secondary btn-sm" onclick="verLookGeneradoEnAvatar(${i})">📸 Ver en avatar</button>
       </div>
     </div>`).join('')}</div>`;
@@ -1222,6 +1223,16 @@ async function eliminarLook(id) {
   await sb.from('looks').delete().eq('id', id);
   showToast('Look eliminado');
   await Promise.all([loadLooks(), loadCalendario()]);
+}
+
+function editarLookGenerado(index) {
+  const combo = looksGeneradosCache[index];
+  if (!combo) return showToast('Look no encontrado');
+  lookBuilder = {};
+  CAPAS.forEach(cat => { if (combo.look[cat]) lookBuilder[cat] = combo.look[cat]; });
+  showView('looks');
+  setModo('manual');
+  showToast('Look cargado — edítalo y guárdalo cuando quieras');
 }
 
 async function verLookGeneradoEnAvatar(index) {
