@@ -459,6 +459,7 @@
               <button class="btn btn-primary" style="width:100%" onclick="abrirModalGuardar(null)">💾 Guardar Look</button>
               <button class="btn btn-secondary" style="width:100%" onclick="verLookBuilderEnAvatar()">📸 Ver en avatar</button>
               <button class="btn btn-secondary btn-sm" id="btn-salir-edicion" style="display:none;width:100%" onclick="_salirModoEdicion()">← Añadir más prendas</button>
+              <button class="btn btn-danger btn-sm" id="btn-descartar-edicion" style="display:none;width:100%" onclick="_finalizarEdicion()">✕ Descartar y volver</button>
             </div>
           </div>
         </div>
@@ -1201,6 +1202,7 @@ async function confirmarGuardarLook() {
   }
   closeModal('modal-guardar');
   lookPendienteGuardar = null; limpiarLookBuilder();
+  if (modoEdicion) _finalizarEdicion();
   await Promise.all([loadLooks(), loadCalendario()]);
 }
 
@@ -1285,6 +1287,7 @@ function _activarModoEdicion() {
   setModo('manual');
   document.getElementById('manual-selector-panel').style.display = 'none';
   document.getElementById('btn-salir-edicion').style.display = '';
+  document.getElementById('btn-descartar-edicion').style.display = '';
   updateCapasPanel();
   showToast('Toca "Cambiar" para sustituir una prenda o "Quitar" para eliminarla');
 }
@@ -1293,11 +1296,21 @@ function _salirModoEdicion() {
   modoEdicion = false;
   document.getElementById('manual-selector-panel').style.display = '';
   document.getElementById('btn-salir-edicion').style.display = 'none';
+  document.getElementById('btn-descartar-edicion').style.display = 'none';
   manualFiltro = 'all';
   document.querySelectorAll('[data-view="manual"]').forEach(c => c.classList.remove('active'));
   document.querySelector('[data-view="manual"][data-value="all"]')?.classList.add('active');
   updateCapasPanel();
   renderManualSelector();
+}
+
+function _finalizarEdicion() {
+  modoEdicion = false;
+  limpiarLookBuilder();
+  document.getElementById('btn-salir-edicion').style.display = 'none';
+  document.getElementById('btn-descartar-edicion').style.display = 'none';
+  document.getElementById('manual-selector-panel').style.display = '';
+  setModo('aleatorio');
 }
 
 function abrirCambiarCapa(cat) {
