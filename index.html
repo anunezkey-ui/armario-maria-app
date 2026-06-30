@@ -330,7 +330,6 @@
         <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="oficina">Oficina</button>
         <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="casual">Casual</button>
         <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="noche">Noche</button>
-        <button class="filter-chip" data-filter="contexto" data-view="armario" data-value="fin de semana">Fin de semana</button>
       </div>
       <div class="filter-separator"></div>
       <div class="filter-group">
@@ -387,7 +386,6 @@
               <button class="filter-chip" data-gen="contexto" data-value="oficina">Oficina</button>
               <button class="filter-chip" data-gen="contexto" data-value="casual">Casual</button>
               <button class="filter-chip" data-gen="contexto" data-value="noche">Noche</button>
-              <button class="filter-chip" data-gen="contexto" data-value="fin de semana">Fin de semana</button>
             </div>
           </div>
           <div class="generator-filter-group">
@@ -548,7 +546,6 @@
           <div class="checkbox-chip" data-value="oficina">Oficina</div>
           <div class="checkbox-chip" data-value="casual">Casual</div>
           <div class="checkbox-chip" data-value="noche">Noche</div>
-          <div class="checkbox-chip" data-value="fin de semana">Fin de semana</div>
         </div>
       </div>
       <div class="form-group">
@@ -727,29 +724,29 @@ const SEMILLA = [
   { nombre: 'Trenca camel', categoria: 'chaqueta', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '🧥' },
   { nombre: 'Camisa blanca Oxford', categoria: 'top', contextos: ['oficina','casual'], temporada: 'todo año', color: 'blanco', patron: 'liso', emoji: '👔' },
   { nombre: 'Top seda negro', categoria: 'top', contextos: ['noche','oficina'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👚' },
-  { nombre: 'Camiseta rayas azules', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'azul', patron: 'rayas', emoji: '👕' },
-  { nombre: 'Blusa floral estampada', categoria: 'top', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌸' },
+  { nombre: 'Camiseta rayas azules', categoria: 'top', contextos: ['casual'], temporada: 'P/V', color: 'azul', patron: 'rayas', emoji: '👕' },
+  { nombre: 'Blusa floral estampada', categoria: 'top', contextos: ['casual'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌸' },
   { nombre: 'Pantalón negro sastre', categoria: 'pantalon', contextos: ['oficina','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👖' },
   { nombre: 'Pantalón camel ancho', categoria: 'pantalon', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '👖' },
-  { nombre: 'Jeans azul oscuro', categoria: 'pantalon', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'azul', patron: 'liso', emoji: '👖' },
+  { nombre: 'Jeans azul oscuro', categoria: 'pantalon', contextos: ['casual'], temporada: 'todo año', color: 'azul', patron: 'liso', emoji: '👖' },
   { nombre: 'Falda midi beige', categoria: 'falda', contextos: ['oficina','casual'], temporada: 'P/V', color: 'beige', patron: 'liso', emoji: '👗' },
   { nombre: 'Falda plisada verde', categoria: 'falda', contextos: ['casual','noche'], temporada: 'P/V', color: 'verde', patron: 'liso', emoji: '👗' },
   { nombre: 'Vestido negro clásico', categoria: 'vestido', contextos: ['noche','oficina'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👗' },
-  { nombre: 'Vestido floral verano', categoria: 'vestido', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌺' },
+  { nombre: 'Vestido floral verano', categoria: 'vestido', contextos: ['casual'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🌺' },
   { nombre: 'Salones negros tacón', categoria: 'zapatos', contextos: ['oficina','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👠' },
-  { nombre: 'Sneakers blancos', categoria: 'zapatos', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'blanco', patron: 'liso', emoji: '👟' },
+  { nombre: 'Sneakers blancos', categoria: 'zapatos', contextos: ['casual'], temporada: 'todo año', color: 'blanco', patron: 'liso', emoji: '👟' },
   { nombre: 'Botines camel', categoria: 'zapatos', contextos: ['casual','oficina'], temporada: 'O/I', color: 'camel', patron: 'liso', emoji: '👢' },
   { nombre: 'Sandalias nude', categoria: 'zapatos', contextos: ['casual','noche'], temporada: 'P/V', color: 'nude', patron: 'liso', emoji: '👡' },
   { nombre: 'Collar dorado delicado', categoria: 'accesorio', contextos: ['oficina','casual','noche'], temporada: 'todo año', color: 'dorado', patron: 'liso', emoji: '📿' },
-  { nombre: 'Pendientes aro plata', categoria: 'accesorio', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'plata', patron: 'liso', emoji: '💍' },
+  { nombre: 'Pendientes aro plata', categoria: 'accesorio', contextos: ['casual'], temporada: 'todo año', color: 'plata', patron: 'liso', emoji: '💍' },
   { nombre: 'Anillo sello dorado', categoria: 'accesorio', contextos: ['casual','noche'], temporada: 'todo año', color: 'dorado', patron: 'liso', emoji: '💍' },
   { nombre: 'Cinturón negro fino', categoria: 'accesorio', contextos: ['oficina','casual','noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '🪡' },
   { nombre: 'Bolso camel estructura', categoria: 'bolso', contextos: ['oficina','casual'], temporada: 'todo año', color: 'camel', patron: 'liso', emoji: '👜' },
   { nombre: 'Bolso negro noche', categoria: 'bolso', contextos: ['noche'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '👛' },
-  { nombre: 'Mochila cuero marrón', categoria: 'bolso', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'marrón', patron: 'liso', emoji: '🎒' },
-  { nombre: 'Bañador negro', categoria: 'bano', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'negro', patron: 'liso', emoji: '🩱' },
-  { nombre: 'Pareo estampado', categoria: 'bano', contextos: ['casual','fin de semana'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🏖️' },
-  { nombre: 'Neceser viaje', categoria: 'bano', contextos: ['casual','fin de semana'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '🧴' },
+  { nombre: 'Mochila cuero marrón', categoria: 'bolso', contextos: ['casual'], temporada: 'todo año', color: 'marrón', patron: 'liso', emoji: '🎒' },
+  { nombre: 'Bañador negro', categoria: 'bano', contextos: ['casual'], temporada: 'P/V', color: 'negro', patron: 'liso', emoji: '🩱' },
+  { nombre: 'Pareo estampado', categoria: 'bano', contextos: ['casual'], temporada: 'P/V', color: 'multicolor', patron: 'estampado', emoji: '🏖️' },
+  { nombre: 'Neceser viaje', categoria: 'bano', contextos: ['casual'], temporada: 'todo año', color: 'negro', patron: 'liso', emoji: '🧴' },
 ];
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
