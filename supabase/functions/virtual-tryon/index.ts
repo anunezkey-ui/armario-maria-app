@@ -14,7 +14,7 @@ const CATEGORY_MAP: Record<string, string> = {
   pantalon: 'lower_body',
   falda: 'lower_body',
   vestido: 'dresses',
-  bano: 'upper_body',
+  bano: 'dresses',
 };
 
 serve(async (req) => {
