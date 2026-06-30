@@ -924,6 +924,7 @@ function generarLooks() {
         </div>`).join('')}</div>
       <div class="look-card-actions">
         <button class="btn btn-primary btn-sm" onclick="abrirModalGuardar(${i})">💾 Guardar este look</button>
+        <button class="btn btn-secondary btn-sm" onclick="verLookGeneradoEnAvatar(${i})">📷 Ver en avatar</button>
       </div>
     </div>`).join('')}</div>`;
 }
@@ -1136,15 +1137,23 @@ async function eliminarLook(id) {
   await Promise.all([loadLooks(), loadCalendario()]);
 }
 
+async function verLookGeneradoEnAvatar(index) {
+  const combo = looksGeneradosCache[index];
+  if (!combo) return showToast('Look no encontrado');
+  const prendas = Object.values(combo.look).filter(Boolean);
+  await _verPrendasEnAvatar(prendas);
+}
+
 async function verLookEnAvatar(lookId) {
-  // Find look and its prendas
   const { data: look } = await sb.from('looks').select('*, looks_prendas(*, prendas(*))').eq('id', lookId).single();
   if (!look) return showToast('Look no encontrado');
-
   const prendas = (look.looks_prendas || []).map(lp => lp.prendas).filter(Boolean);
-  if (!prendas.length) return showToast('Este look no tiene prendas con foto');
+  await _verPrendasEnAvatar(prendas);
+}
 
-  // Priority order: vestido > top > pantalon/falda > chaqueta
+async function _verPrendasEnAvatar(prendas) {
+  if (!prendas.length) return showToast('Este look no tiene prendas');
+
   const prioridad = ['vestido', 'top', 'pantalon', 'falda', 'chaqueta'];
   const sorted = [...prendas].sort((a, b) => {
     const ia = prioridad.indexOf(a.categoria);
