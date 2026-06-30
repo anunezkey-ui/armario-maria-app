@@ -954,6 +954,7 @@ function toggleLookBuilder(id) {
 function updateCapasPanel() {
   CAPAS.forEach(cat => {
     const slot = document.getElementById('slot-' + cat);
+    if (!slot) return;
     const p = lookBuilder[cat];
     if (p) {
       slot.classList.add('filled');
