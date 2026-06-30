@@ -1193,7 +1193,7 @@ async function _verPrendasEnAvatar(prendas) {
         prendaUrl: prenda.imagen_url,
         categoria: prenda.categoria,
         descripcion: prenda.nombre,
-        intimo: prenda.intimo || false,
+        intimo: prenda.intimo || prenda.categoria === 'bano' || false,
       }),
     });
     const startData = await startRes.json();
