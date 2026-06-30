@@ -532,7 +532,7 @@
       <div class="form-group"><label>Nombre *</label><input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" /></div>
       <div class="form-group">
         <label>Categoría *</label>
-        <select id="prenda-categoria" required>
+        <select id="prenda-categoria" required onchange="document.getElementById('grupo-largo-vestido').style.display = this.value === 'vestido' ? 'block' : 'none'">
           <option value="">Selecciona…</option>
           <option value="chaqueta">Chaqueta / Abrigo</option>
           <option value="top">Top / Camisa / Camiseta</option>
@@ -572,6 +572,15 @@
           <option value="liso">Liso</option>
           <option value="rayas">Rayas</option>
           <option value="estampado">Estampado</option>
+        </select>
+      </div>
+      <div class="form-group" id="grupo-largo-vestido" style="display:none">
+        <label>Largo del vestido</label>
+        <select id="prenda-largo">
+          <option value="">Sin especificar</option>
+          <option value="corto">Corto (por encima de la rodilla)</option>
+          <option value="medio">Medio (por la rodilla / midi)</option>
+          <option value="largo">Largo (maxi)</option>
         </select>
       </div>
       <div class="form-group">
@@ -1196,7 +1205,7 @@ async function _verPrendasEnAvatar(prendas) {
       body: JSON.stringify({
         prendaUrl: prenda.imagen_url,
         categoria: prenda.categoria,
-        descripcion: prenda.nombre,
+        descripcion: prenda.nombre + (prenda.largo ? `, vestido ${prenda.largo}` : ''),
         intimo: prenda.intimo || prenda.categoria === 'bano' || false,
       }),
     });
@@ -1480,6 +1489,7 @@ async function submitPrenda(e) {
     contextos, temporada: document.getElementById('prenda-temporada').value,
     color: document.getElementById('prenda-color').value,
     patron: document.getElementById('prenda-patron').value,
+    largo: document.getElementById('prenda-largo').value || null,
     imagen_url
   }]);
   btn.disabled = false; btn.textContent = 'Guardar';
