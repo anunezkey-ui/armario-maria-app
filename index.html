@@ -1360,7 +1360,7 @@ async function verLookEnAvatar(lookId) {
 async function _verPrendasEnAvatar(prendas) {
   if (!prendas.length) return showToast('Este look no tiene prendas');
 
-  const prioridad = ['vestido', 'top', 'pantalon', 'falda', 'chaqueta'];
+  const prioridad = ['conjunto', 'vestido', 'top', 'pantalon', 'falda', 'chaqueta'];
   const sorted = [...prendas].sort((a, b) => {
     const ia = prioridad.indexOf(a.categoria);
     const ib = prioridad.indexOf(b.categoria);
