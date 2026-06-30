@@ -532,7 +532,7 @@
       <div class="form-group"><label>Nombre *</label><input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" /></div>
       <div class="form-group">
         <label>Categoría *</label>
-        <select id="prenda-categoria" required onchange="document.getElementById('grupo-largo-vestido').style.display = this.value === 'vestido' ? 'block' : 'none'">
+        <select id="prenda-categoria" required onchange="document.getElementById('grupo-largo-vestido').style.display = (this.value === 'vestido' || this.value === 'falda') ? 'block' : 'none'">
           <option value="">Selecciona…</option>
           <option value="chaqueta">Chaqueta / Abrigo</option>
           <option value="top">Top / Camisa / Camiseta</option>
@@ -575,7 +575,7 @@
         </select>
       </div>
       <div class="form-group" id="grupo-largo-vestido" style="display:none">
-        <label>Largo del vestido</label>
+        <label>Largo</label>
         <select id="prenda-largo">
           <option value="">Sin especificar</option>
           <option value="corto">Corto (por encima de la rodilla)</option>
