@@ -448,8 +448,9 @@
             <div class="capa-slot" id="slot-bolso"><span style="color:var(--muted);font-size:0.82rem">Bolso</span></div>
             <div class="capa-slot" id="slot-accesorio"><span style="color:var(--muted);font-size:0.82rem">Accesorio</span></div>
             <div class="warning-box warning-estampado" id="warning-estampado">⚠️ Máximo 1 prenda estampada por look.</div>
-            <div style="margin-top:16px">
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
               <button class="btn btn-primary" style="width:100%" onclick="abrirModalGuardar(null)">💾 Guardar Look</button>
+              <button class="btn btn-secondary" style="width:100%" onclick="verLookBuilderEnAvatar()">📸 Ver en avatar</button>
             </div>
           </div>
         </div>
@@ -963,6 +964,12 @@ function updateCapasPanel() {
 }
 
 function limpiarLookBuilder() { lookBuilder = {}; updateCapasPanel(); renderManualSelector(); }
+
+async function verLookBuilderEnAvatar() {
+  const prendas = Object.values(lookBuilder).filter(Boolean);
+  if (!prendas.length) return showToast('Añade al menos una prenda al look');
+  await _verPrendasEnAvatar(prendas);
+}
 
 // ─── REGLA 7 DÍAS OFICINA ─────────────────────────────────────────────────────
 function lookEsOficina(lookId) {
