@@ -1145,9 +1145,10 @@ async function verLookGeneradoEnAvatar(index) {
 }
 
 async function verLookEnAvatar(lookId) {
-  const { data: look } = await sb.from('looks').select('*, looks_prendas(*, prendas(*))').eq('id', lookId).single();
-  if (!look) return showToast('Look no encontrado');
-  const prendas = (look.looks_prendas || []).map(lp => lp.prendas).filter(Boolean);
+  const { data: lps } = await sb.from('looks_prendas').select('prenda_id').eq('look_id', lookId);
+  if (!lps || !lps.length) return showToast('Este look no tiene prendas');
+  const ids = lps.map(lp => lp.prenda_id);
+  const prendas = allPrendas.filter(p => ids.includes(p.id));
   await _verPrendasEnAvatar(prendas);
 }
 
