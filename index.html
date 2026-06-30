@@ -343,6 +343,7 @@
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="accesorio">Accesorios</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bolso">Bolsos</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bano">Baño</button>
+        <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="deporte">Deporte</button>
       </div>
       <div class="filter-separator"></div>
       <div class="filter-group">
@@ -425,6 +426,7 @@
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="accesorio">Accesorios</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="bolso">Bolsos</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="bano">Baño</button>
+              <button class="filter-chip" data-filter="capa" data-view="manual" data-value="deporte">Deporte</button>
             </div>
           </div>
           <div id="grid-manual-selector" class="grid-prendas"></div>
@@ -439,6 +441,7 @@
             <div class="capa-slot" id="slot-falda"><span style="color:var(--muted);font-size:0.82rem">Falda</span></div>
             <div class="capa-slot" id="slot-vestido"><span style="color:var(--muted);font-size:0.82rem">Vestido</span></div>
             <div class="capa-slot" id="slot-bano"><span style="color:var(--muted);font-size:0.82rem">Baño</span></div>
+            <div class="capa-slot" id="slot-deporte"><span style="color:var(--muted);font-size:0.82rem">Deporte</span></div>
             <div class="capa-slot" id="slot-zapatos"><span style="color:var(--muted);font-size:0.82rem">Zapatos</span></div>
             <div class="capa-slot" id="slot-bolso"><span style="color:var(--muted);font-size:0.82rem">Bolso</span></div>
             <div class="capa-slot" id="slot-accesorio"><span style="color:var(--muted);font-size:0.82rem">Accesorio</span></div>
@@ -538,6 +541,7 @@
           <option value="zapatos">Zapatos</option>
           <option value="bolso">Bolso</option>
           <option value="bano">Baño</option>
+          <option value="deporte">Deporte</option>
         </select>
       </div>
       <div class="form-group">
@@ -715,8 +719,8 @@ let lookIdParaAsignar = null;
 let calFechaSeleccionada = null;
 let looksGeneradosCache = [];
 
-const CAPAS = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'bano', 'zapatos', 'bolso', 'accesorio'];
-const CAPA_LABELS = { chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', bano: 'Baño', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
+const CAPAS = ['chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'bano', 'deporte', 'zapatos', 'bolso', 'accesorio'];
+const CAPA_LABELS = { chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', bano: 'Baño', deporte: 'Deporte', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
 
 const SEMILLA = [
   { nombre: 'Blazer beige', categoria: 'chaqueta', contextos: ['oficina','casual'], temporada: 'todo año', color: 'beige', patron: 'liso', emoji: '🧥' },
