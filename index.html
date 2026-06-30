@@ -346,6 +346,10 @@
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bano">Baño</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="deporte">Deporte</button>
       </div>
+      <div class="filter-separator" id="sep-subtipo" style="display:none"></div>
+      <div class="filter-group" id="filtros-subtipo" style="display:none">
+        <button class="filter-chip active" data-filter="subtipo" data-view="armario" data-value="all">Todos</button>
+      </div>
       <div class="filter-separator"></div>
       <div class="filter-group">
         <button class="filter-chip active" data-filter="temporada" data-view="armario" data-value="all">Toda temp.</button>
@@ -532,7 +536,7 @@
       <div class="form-group"><label>Nombre *</label><input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" /></div>
       <div class="form-group">
         <label>Categoría *</label>
-        <select id="prenda-categoria" required onchange="document.getElementById('grupo-largo-vestido').style.display = (this.value === 'vestido' || this.value === 'falda') ? 'block' : 'none'">
+        <select id="prenda-categoria" required onchange="onCategoriaChange(this.value)">
           <option value="">Selecciona…</option>
           <option value="chaqueta">Chaqueta / Abrigo</option>
           <option value="top">Top / Camisa / Camiseta</option>
@@ -572,6 +576,12 @@
           <option value="liso">Liso</option>
           <option value="rayas">Rayas</option>
           <option value="estampado">Estampado</option>
+        </select>
+      </div>
+      <div class="form-group" id="grupo-subtipo" style="display:none">
+        <label>Tipo</label>
+        <select id="prenda-subtipo">
+          <option value="">Sin especificar</option>
         </select>
       </div>
       <div class="form-group" id="grupo-largo-vestido" style="display:none">
@@ -832,7 +842,9 @@ function setupFilterListeners() {
   document.querySelectorAll('[data-view="armario"]').forEach(chip => {
     chip.addEventListener('click', function() {
       this.closest('.filter-group').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active'); renderArmario();
+      this.classList.add('active');
+      if (this.dataset.filter === 'categoria') actualizarFiltrosSubtipo(this.dataset.value);
+      renderArmario();
     });
   });
   document.querySelectorAll('[data-view="manual"]').forEach(chip => {
@@ -849,13 +861,14 @@ function setupFilterListeners() {
   });
 }
 
-function filtrarPrendas(prendas, { contexto, temporada, patron, capa, categoria } = {}) {
+function filtrarPrendas(prendas, { contexto, temporada, patron, capa, categoria, subtipo } = {}) {
   return prendas.filter(p => {
     if (contexto && contexto !== 'all' && !p.contextos.includes(contexto)) return false;
     if (temporada && temporada !== 'all' && p.temporada !== temporada && p.temporada !== 'todo año') return false;
     if (patron && patron !== 'all' && p.patron !== patron) return false;
     if (capa && capa !== 'all' && p.categoria !== capa) return false;
     if (categoria && categoria !== 'all' && p.categoria !== categoria) return false;
+    if (subtipo && subtipo !== 'all' && p.subtipo !== subtipo) return false;
     return true;
   });
 }
@@ -863,7 +876,27 @@ function filtrarPrendas(prendas, { contexto, temporada, patron, capa, categoria 
 // ─── ARMARIO ─────────────────────────────────────────────────────────────────
 function getArmarioFiltros() {
   const get = f => document.querySelector(`[data-filter="${f}"][data-view="armario"].active`)?.dataset.value || 'all';
-  return { contexto: get('contexto'), temporada: get('temporada'), patron: get('patron'), categoria: get('categoria') };
+  return { contexto: get('contexto'), temporada: get('temporada'), patron: get('patron'), categoria: get('categoria'), subtipo: get('subtipo') };
+}
+
+function actualizarFiltrosSubtipo(categoria) {
+  const grupo = document.getElementById('filtros-subtipo');
+  const sep = document.getElementById('sep-subtipo');
+  const subtipos = SUBTIPOS[categoria];
+  if (subtipos) {
+    grupo.innerHTML = '<button class="filter-chip active" data-filter="subtipo" data-view="armario" data-value="all">Todos</button>'
+      + subtipos.map(s => `<button class="filter-chip" data-filter="subtipo" data-view="armario" data-value="${s.toLowerCase()}">${s}</button>`).join('');
+    grupo.querySelectorAll('button').forEach(b => b.addEventListener('click', function() {
+      grupo.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      this.classList.add('active');
+      renderArmario();
+    }));
+    grupo.style.display = 'flex';
+    sep.style.display = 'block';
+  } else {
+    grupo.style.display = 'none';
+    sep.style.display = 'none';
+  }
 }
 
 function renderArmario() {
@@ -976,6 +1009,24 @@ function updateCapasPanel() {
   });
   const est = Object.values(lookBuilder).filter(p => p.patron === 'estampado').length;
   document.getElementById('warning-estampado').classList.toggle('show', est > 1);
+}
+
+const SUBTIPOS = {
+  zapatos: ['Tacón','Plano','Bota','Sandalia','Zapatilla'],
+  accesorio: ['Pendiente','Collar','Pulsera','Cinturón','Pañuelo','Sombrero','Gafas'],
+};
+
+function onCategoriaChange(val) {
+  document.getElementById('grupo-largo-vestido').style.display = (val === 'vestido' || val === 'falda') ? 'block' : 'none';
+  const grupoSub = document.getElementById('grupo-subtipo');
+  const selSub = document.getElementById('prenda-subtipo');
+  if (SUBTIPOS[val]) {
+    selSub.innerHTML = '<option value="">Sin especificar</option>' + SUBTIPOS[val].map(s => `<option value="${s.toLowerCase()}">${s}</option>`).join('');
+    grupoSub.style.display = 'block';
+  } else {
+    grupoSub.style.display = 'none';
+    selSub.value = '';
+  }
 }
 
 function limpiarLookBuilder() { lookBuilder = {}; updateCapasPanel(); renderManualSelector(); }
@@ -1490,6 +1541,7 @@ async function submitPrenda(e) {
     color: document.getElementById('prenda-color').value,
     patron: document.getElementById('prenda-patron').value,
     largo: document.getElementById('prenda-largo').value || null,
+    subtipo: document.getElementById('prenda-subtipo').value || null,
     imagen_url
   }]);
   btn.disabled = false; btn.textContent = 'Guardar';
