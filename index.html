@@ -1230,9 +1230,17 @@ function editarLookGenerado(index) {
   if (!combo) return showToast('Look no encontrado');
   lookBuilder = {};
   CAPAS.forEach(cat => { if (combo.look[cat]) lookBuilder[cat] = combo.look[cat]; });
+  _activarModoEdicion();
+}
+
+function _activarModoEdicion() {
+  manualFiltro = 'all';
   showView('looks');
   setModo('manual');
-  showToast('Look cargado — edítalo y guárdalo cuando quieras');
+  // Activar chip "Todas" visualmente
+  document.querySelectorAll('[data-view="manual"]').forEach(c => c.classList.remove('active'));
+  document.querySelector('[data-view="manual"][data-value="all"]')?.classList.add('active');
+  showToast('Look cargado — añade o quita prendas y guárdalo');
 }
 
 async function verLookGeneradoEnAvatar(index) {
@@ -1672,8 +1680,7 @@ function editarLookReferencia(ids) {
   if (!prendas.length) return showToast('No se encontraron las prendas');
   lookBuilder = {};
   prendas.forEach(p => { lookBuilder[p.categoria] = p; });
-  setModo('manual');
-  showToast('Look cargado — edítalo y guárdalo cuando quieras');
+  _activarModoEdicion();
 }
 
 function emojiCat(cat) {
