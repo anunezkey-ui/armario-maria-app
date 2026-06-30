@@ -16,15 +16,15 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--carbon); min-height: 100vh; }
 
-    header { background: var(--carbon); color: var(--white); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-    header h1 { font-family: 'Playfair Display', serif; font-size: 1.4rem; letter-spacing: 0.5px; }
-    header .subtitle { font-size: 0.7rem; color: var(--sage-light); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+    header { background: var(--carbon); color: var(--white); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); min-height: 52px; }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 1.1rem; letter-spacing: 0.5px; white-space: nowrap; }
+    header .subtitle { display: none; }
 
-    nav { background: var(--white); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; scrollbar-width: none; position: sticky; top: 0; z-index: 100; }
+    nav { display: flex; overflow-x: auto; scrollbar-width: none; }
     nav::-webkit-scrollbar { display: none; }
-    nav button { padding: 14px 24px; border: none; background: none; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
-    nav button.active { color: var(--carbon); border-bottom-color: var(--sage); }
-    nav button:hover:not(.active) { color: var(--carbon); }
+    nav button { padding: 0 20px; height: 52px; border: none; background: none; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+    nav button.active { color: var(--white); border-bottom-color: var(--sage); }
+    nav button:hover:not(.active) { color: var(--white); }
 
     main { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
     .view { display: none; }
@@ -300,18 +300,14 @@
 <body>
 
 <header>
-  <div>
-    <h1>Armario María ✨</h1>
-    <div class="subtitle">Organizador de Outfits</div>
-  </div>
+  <h1>Armario María ✨</h1>
+  <nav>
+    <button class="active" onclick="showView('armario', this)">👗 Armario</button>
+    <button onclick="showView('looks', this)">✨ Looks</button>
+    <button onclick="showView('calendario', this)">📅 Calendario</button>
+    <button onclick="showView('maletas', this)">🧳 Maletas</button>
+  </nav>
 </header>
-
-<nav>
-  <button class="active" onclick="showView('armario', this)">👗 Armario</button>
-  <button onclick="showView('looks', this)">✨ Looks</button>
-  <button onclick="showView('calendario', this)">📅 Calendario</button>
-  <button onclick="showView('maletas', this)">🧳 Maletas</button>
-</nav>
 
 <main>
 
