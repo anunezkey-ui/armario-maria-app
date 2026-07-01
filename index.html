@@ -143,6 +143,15 @@
     .tag-estampado { background: #FFF3E0; color: #E65100; }
     .tag-liso { background: #E8F5E9; color: #2E7D32; }
     .prenda-card-actions { display: flex; gap: 6px; padding: 0 12px 10px; }
+    .prenda-card-actions button[data-tip] { position: relative; }
+    .prenda-card-actions button[data-tip]::after {
+      content: attr(data-tip);
+      position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: var(--carbon); color: var(--white); font-size: 0.68rem; font-weight: 600;
+      padding: 4px 8px; border-radius: 6px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.12s; z-index: 5;
+    }
+    .prenda-card-actions button[data-tip]:hover::after { opacity: 1; }
 
     /* MODO TOGGLE */
     .mode-toggle { display: flex; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); padding: 4px; gap: 4px; margin-bottom: 24px; }
@@ -984,7 +993,7 @@ function prendaCardHTML(p, selectable) {
     : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</div>`;
   const actions = selectable
     ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
-    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" title="Editar" onclick="editarPrenda(${p.id})">✏️</button><button class="btn btn-secondary btn-sm" title="Añadir a maleta" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" title="Eliminar" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
+    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" data-tip="Editar" onclick="editarPrenda(${p.id})">✏️</button><button class="btn btn-secondary btn-sm" data-tip="Añadir a maleta" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" data-tip="Eliminar" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
   return `<div class="prenda-card ${selected ? 'selected' : ''}">${imgHTML}
     <div class="prenda-info">
       <div class="prenda-nombre">${p.nombre}</div>
