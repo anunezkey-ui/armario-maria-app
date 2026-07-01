@@ -1222,9 +1222,17 @@ function inferirTemporada(look) {
 }
 
 function lookCardHTML(l) {
+  const prendasRich = l.prendas.map(p => ({ ...p, imagen_url: allPrendas.find(ap => Number(ap.id) === Number(p.id))?.imagen_url }));
   return `<div class="look-card">
     <h3>${l.nombre}</h3>
-    <div class="look-prendas">${l.prendas.map(p => `<span class="look-prenda-chip">${p.emoji || '👗'} ${p.nombre}</span>`).join('')}</div>
+    <div class="look-prendas-imgs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+      ${prendasRich.map(p => `
+        <div title="${p.nombre}" style="width:52px;height:52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          ${p.imagen_url
+            ? `<img src="${p.imagen_url}" style="width:100%;height:100%;object-fit:cover" />`
+            : `<span style="font-size:1.4rem">${p.emoji || '👗'}</span>`}
+        </div>`).join('')}
+    </div>
     ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">${l.contextos.join(' · ')}</div>` : ''}
     <div class="look-card-footer">
       <button class="btn btn-accent btn-sm" onclick="abrirAsignarDia(${l.id}, '${escapeStr(l.nombre)}')">📅 Asignar a día</button>
