@@ -984,7 +984,7 @@ function prendaCardHTML(p, selectable) {
     : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</div>`;
   const actions = selectable
     ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
-    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="editarPrenda(${p.id})">✏️</button><button class="btn btn-secondary btn-sm" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
+    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" title="Editar" onclick="editarPrenda(${p.id})">✏️</button><button class="btn btn-secondary btn-sm" title="Añadir a maleta" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" title="Eliminar" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
   return `<div class="prenda-card ${selected ? 'selected' : ''}">${imgHTML}
     <div class="prenda-info">
       <div class="prenda-nombre">${p.nombre}</div>
