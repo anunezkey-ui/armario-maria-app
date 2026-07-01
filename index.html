@@ -307,6 +307,7 @@
     <button onclick="showView('looks', this)">✨ Looks</button>
     <button onclick="showView('calendario', this)">📅 Calendario</button>
     <button onclick="showView('maletas', this)">🧳 Maletas</button>
+    <button onclick="openModal('modal-ayuda')">❓ Ayuda</button>
   </nav>
 </header>
 
@@ -539,6 +540,32 @@
   </div>
 
 </main>
+
+<!-- ───── MODAL: AYUDA ───── -->
+<div class="modal-overlay" id="modal-ayuda">
+  <div class="modal" style="max-width:560px">
+    <h2>❓ Guía de uso</h2>
+    <div style="max-height:60vh;overflow-y:auto;font-size:0.88rem;line-height:1.6;padding-right:4px">
+      <p style="font-weight:600;margin-bottom:4px">👗 Armario</p>
+      <p style="margin-bottom:14px;color:var(--muted)">Sube tus prendas con foto (el fondo se recorta automático). Rellena categoría, contextos, temporada, color y patrón para que looks y filtros funcionen bien. Puedes editar (✏️) o eliminar (🗑) cualquier prenda luego, y añadirla directamente a una maleta (🧳).</p>
+
+      <p style="font-weight:600;margin-bottom:4px">✨ Looks</p>
+      <p style="margin-bottom:14px;color:var(--muted)">Genera un look al azar, móntalo tú misma prenda a prenda (modo manual), o sube una foto de inspiración para que la app busque prendas parecidas en tu armario. Puedes editar cualquier look guardado tocando ✏️ para cambiar o quitar capas concretas. El botón 📸 aplica el look sobre tu avatar (o el sintético en baño/dormir).</p>
+
+      <p style="font-weight:600;margin-bottom:4px">📅 Calendario</p>
+      <p style="margin-bottom:14px;color:var(--muted)">Asigna looks guardados a un día concreto desde el botón "Asignar a día". Si repites un look de oficina en menos de 7 días, la app te avisa.</p>
+
+      <p style="font-weight:600;margin-bottom:4px">🧳 Maletas</p>
+      <p style="margin-bottom:14px;color:var(--muted)">Crea una maleta manualmente, añade prendas sueltas desde el armario o looks enteros desde "Añadir a maleta". Si ya tienes looks asignados en el calendario para un rango de fechas, usa "Lista desde mis looks" para generar la lista automáticamente. "Duplicar" crea una copia editable de una maleta existente. La sección de ropa interior (sujetadores, bragas, calcetines, medias) es un checklist aparte con cantidades ajustables.</p>
+
+      <p style="font-weight:600;margin-bottom:4px">📸 Ver en avatar</p>
+      <p style="margin-bottom:0;color:var(--muted)">Disponible desde un look manual, generado o guardado. Tarda unos segundos en procesar (IA de prueba virtual). Las prendas de baño y dormir usan un avatar sintético por privacidad.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('modal-ayuda')">Entendido</button>
+    </div>
+  </div>
+</div>
 
 <!-- ───── MODAL: AÑADIR PRENDA ───── -->
 <div class="modal-overlay" id="modal-prenda">
