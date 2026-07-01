@@ -1593,10 +1593,10 @@ function generarMaleta() {
       <div class="maleta-cat-title">Ropa interior</div>
       <div class="maleta-items">
         ${[
-          { emoji: '👙', label: 'Sujetadores', id: 'intimo-sujetadores', default: Math.max(1, Math.ceil(dias / 3)) },
-          { emoji: '🩲', label: 'Bragas',       id: 'intimo-bragas',      default: dias },
-          { emoji: '🧦', label: 'Calcetines',   id: 'intimo-calcetines',  default: dias },
-          { emoji: '🩱', label: 'Medias',        id: 'intimo-medias',      default: 2 },
+          { emoji: '👙', label: 'Sujetadores', id: 'intimo-sujetadores', default: Math.max(1, dias) },
+          { emoji: '🩲', label: 'Bragas',       id: 'intimo-bragas',      default: Math.max(1, dias) },
+          { emoji: '🧦', label: 'Calcetines',   id: 'intimo-calcetines',  default: Math.max(1, dias) },
+          { emoji: '🩱', label: 'Medias',        id: 'intimo-medias',      default: Math.max(1, dias) },
         ].map(item => `
           <div class="maleta-item" style="justify-content:space-between">
             <div style="display:flex;align-items:center;gap:12px">
