@@ -381,13 +381,13 @@
       <h2 class="section-title">Looks</h2>
     </div>
     <div class="mode-toggle">
-      <button class="mode-btn active" id="btn-modo-aleatorio" onclick="setModo('aleatorio')">🎲 Modo Aleatorio</button>
+      <button class="mode-btn active" id="btn-modo-automatico" onclick="setModo('automatico')">🎲 Modo Automático</button>
       <button class="mode-btn" id="btn-modo-manual" onclick="setModo('manual')">✏️ Modo Manual</button>
       <button class="mode-btn" id="btn-modo-referencia" onclick="setModo('referencia')">📸 Desde Referencia</button>
     </div>
 
     <!-- ALEATORIO -->
-    <div id="modo-aleatorio">
+    <div id="modo-automatico">
       <div class="generator-panel">
         <h3>Genera looks automáticamente</h3>
         <div class="generator-filters">
@@ -784,7 +784,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let allPrendas = [], allLooks = [];
 let calendario = {}; // fecha -> [{id, look_id}, ...]
 let lookBuilder = {};
-let modoActual = 'aleatorio';
+let modoActual = 'automatico';
 let genFiltros = { contexto: 'all', temporada: 'all' };
 let manualFiltro = 'all';
 let saveOption = 'solo';
@@ -880,10 +880,10 @@ function showView(name, btn) {
 
 function setModo(modo) {
   modoActual = modo;
-  document.getElementById('modo-aleatorio').style.display = modo === 'aleatorio' ? 'block' : 'none';
+  document.getElementById('modo-automatico').style.display = modo === 'automatico' ? 'block' : 'none';
   document.getElementById('modo-manual').style.display = modo === 'manual' ? 'block' : 'none';
   document.getElementById('modo-referencia').style.display = modo === 'referencia' ? 'block' : 'none';
-  document.getElementById('btn-modo-aleatorio').classList.toggle('active', modo === 'aleatorio');
+  document.getElementById('btn-modo-automatico').classList.toggle('active', modo === 'automatico');
   document.getElementById('btn-modo-manual').classList.toggle('active', modo === 'manual');
   document.getElementById('btn-modo-referencia').classList.toggle('active', modo === 'referencia');
   if (modo === 'manual') {
@@ -1355,7 +1355,7 @@ function _finalizarEdicion() {
   document.getElementById('btn-salir-edicion').style.display = 'none';
   document.getElementById('btn-descartar-edicion').style.display = 'none';
   document.getElementById('manual-selector-panel').style.display = '';
-  setModo('aleatorio');
+  setModo('automatico');
 }
 
 function abrirCambiarCapa(cat) {
