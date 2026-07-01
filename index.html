@@ -543,7 +543,7 @@
 <!-- ───── MODAL: AÑADIR PRENDA ───── -->
 <div class="modal-overlay" id="modal-prenda">
   <div class="modal">
-    <h2>Añadir Prenda</h2>
+    <h2 id="modal-prenda-titulo">Añadir Prenda</h2>
     <form id="form-prenda" onsubmit="submitPrenda(event)">
       <div class="form-group"><label>Nombre *</label><input type="text" id="prenda-nombre" required placeholder="Ej: Blazer beige" /></div>
       <div class="form-group">
@@ -608,7 +608,7 @@
           <option value="largo">Largo (maxi)</option>
         </select>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="grupo-foto-prenda">
         <label>Foto (opcional)</label>
         <div class="file-upload-area" id="upload-area" onclick="document.getElementById('prenda-imagen').click()">
           <div>📷</div><p>Haz clic para subir una foto</p>
@@ -957,7 +957,7 @@ function prendaCardHTML(p, selectable) {
     : `<div class="prenda-img">${p.emoji || {chaqueta:'🧥',top:'👚',pantalon:'👖',falda:'👗',vestido:'👗',zapatos:'👟',accesorio:'💍',bolso:'👜',bano:'🧴'}[p.categoria] || '👗'}</div>`;
   const actions = selectable
     ? `<div class="prenda-card-actions"><button class="btn btn-sm ${selected ? 'btn-primary' : 'btn-secondary'}" onclick="toggleLookBuilder(${p.id})">${selected ? '✓ En look' : '+ Añadir'}</button></div>`
-    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
+    : `<div class="prenda-card-actions"><button class="btn btn-secondary btn-sm" onclick="editarPrenda(${p.id})">✏️</button><button class="btn btn-secondary btn-sm" onclick="openModalAñadirMaleta(${p.id})">🧳</button><button class="btn btn-secondary btn-sm" onclick="eliminarPrenda(${p.id})">🗑</button></div>`;
   return `<div class="prenda-card ${selected ? 'selected' : ''}">${imgHTML}
     <div class="prenda-info">
       <div class="prenda-nombre">${p.nombre}</div>
@@ -1627,11 +1627,45 @@ function generarMaleta() {
 }
 
 // ─── MODAL PRENDA ─────────────────────────────────────────────────────────────
+let prendaEditandoId = null;
+
 function openModalPrenda() {
+  prendaEditandoId = null;
   document.getElementById('form-prenda').reset();
   document.getElementById('upload-preview').style.display = 'none';
   document.getElementById('upload-area').classList.remove('has-file');
   document.querySelectorAll('.checkbox-chip').forEach(c => c.classList.remove('checked'));
+  document.getElementById('modal-prenda-titulo').textContent = 'Añadir Prenda';
+  document.getElementById('btn-submit-prenda').textContent = 'Guardar';
+  document.getElementById('grupo-foto-prenda').style.display = '';
+  onCategoriaChange('');
+  openModal('modal-prenda');
+}
+
+function editarPrenda(id) {
+  const p = allPrendas.find(p => p.id === id);
+  if (!p) return;
+  prendaEditandoId = id;
+  document.getElementById('form-prenda').reset();
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-area').classList.remove('has-file');
+  document.getElementById('modal-prenda-titulo').textContent = `Editar "${p.nombre}"`;
+  document.getElementById('btn-submit-prenda').textContent = 'Guardar cambios';
+  document.getElementById('grupo-foto-prenda').style.display = 'none';
+
+  document.getElementById('prenda-nombre').value = p.nombre || '';
+  document.getElementById('prenda-categoria').value = p.categoria || '';
+  onCategoriaChange(p.categoria || '');
+  document.getElementById('prenda-temporada').value = p.temporada || '';
+  document.getElementById('prenda-color').value = p.color || '';
+  document.getElementById('prenda-patron').value = p.patron || '';
+  document.getElementById('prenda-largo').value = p.largo || '';
+  document.getElementById('prenda-subtipo').value = p.subtipo || '';
+
+  document.querySelectorAll('#prenda-contextos .checkbox-chip').forEach(c => {
+    c.classList.toggle('checked', (p.contextos || []).includes(c.dataset.value));
+  });
+
   openModal('modal-prenda');
 }
 
@@ -1655,10 +1689,11 @@ async function submitPrenda(e) {
   const btn = document.getElementById('btn-submit-prenda');
   btn.disabled = true; btn.textContent = 'Guardando…';
   const contextos = [...document.querySelectorAll('#prenda-contextos .checkbox-chip.checked')].map(c => c.dataset.value);
-  if (!contextos.length) { showToast('Selecciona al menos un contexto', 'error'); btn.disabled = false; btn.textContent = 'Guardar'; return; }
+  const textoBtnOriginal = prendaEditandoId ? 'Guardar cambios' : 'Guardar';
+  if (!contextos.length) { showToast('Selecciona al menos un contexto', 'error'); btn.disabled = false; btn.textContent = textoBtnOriginal; return; }
   let imagen_url = null;
   const fileInput = document.getElementById('prenda-imagen');
-  if (fileInput.files[0]) {
+  if (!prendaEditandoId && fileInput.files[0]) {
     const file = fileInput.files[0];
     const yaRecortado = document.getElementById('fondo-ya-recortado').checked;
     if (yaRecortado) {
@@ -1707,7 +1742,7 @@ async function submitPrenda(e) {
     } // end else (no yaRecortado)
     btn.textContent = 'Guardando…';
   }
-  const { error } = await sb.from('prendas').insert([{
+  const campos = {
     nombre: document.getElementById('prenda-nombre').value,
     categoria: document.getElementById('prenda-categoria').value,
     contextos, temporada: document.getElementById('prenda-temporada').value,
@@ -1715,11 +1750,17 @@ async function submitPrenda(e) {
     patron: document.getElementById('prenda-patron').value,
     largo: document.getElementById('prenda-largo').value || null,
     subtipo: document.getElementById('prenda-subtipo').value || null,
-    imagen_url
-  }]);
-  btn.disabled = false; btn.textContent = 'Guardar';
+  };
+  let error;
+  if (prendaEditandoId) {
+    ({ error } = await sb.from('prendas').update(campos).eq('id', prendaEditandoId));
+  } else {
+    ({ error } = await sb.from('prendas').insert([{ ...campos, imagen_url }]));
+  }
+  btn.disabled = false; btn.textContent = textoBtnOriginal;
   if (error) { console.error('Error guardar prenda:', error); showToast('Error al guardar: ' + error.message, 'error'); return; }
-  showToast('Prenda añadida ✓', 'success');
+  showToast(prendaEditandoId ? 'Prenda actualizada ✓' : 'Prenda añadida ✓', 'success');
+  prendaEditandoId = null;
   closeModal('modal-prenda'); await loadPrendas();
 }
 
