@@ -1888,10 +1888,14 @@ function renderMaletas() {
       <div class="maleta-card-body">
         ${prendas.length
           ? `<div class="maleta-prendas-grid">${prendas.map(p => `
-              <div class="maleta-prenda-chip">
-                <span class="emoji">${emojiCategoria(p)}</span>
-                <span style="flex:1;font-size:0.75rem;line-height:1.2">${p.nombre}</span>
-                <span class="remove" onclick="quitarDeMaleta(${m.id},${p.id})">✕</span>
+              <div class="maleta-prenda-chip" style="flex-direction:column;align-items:center;padding:8px 6px;gap:6px;text-align:center;position:relative">
+                <span class="remove" onclick="quitarDeMaleta(${m.id},${p.id})" style="position:absolute;top:4px;right:4px;font-size:0.7rem">✕</span>
+                <div style="width:56px;height:56px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  ${p.imagen_url
+                    ? `<img src="${p.imagen_url}" style="width:100%;height:100%;object-fit:cover" />`
+                    : `<span style="font-size:1.6rem">${p.emoji || emojiCategoria(p)}</span>`}
+                </div>
+                <span style="font-size:0.7rem;line-height:1.2;word-break:break-word">${p.nombre}</span>
               </div>`).join('')}
             </div>`
           : '<p class="maleta-empty">Sin prendas aún — añade desde el Armario pulsando 🧳</p>'
