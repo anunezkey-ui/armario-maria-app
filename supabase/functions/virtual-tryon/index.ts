@@ -16,6 +16,7 @@ const CATEGORY_MAP: Record<string, string> = {
   vestido: 'dresses',
   conjunto: 'dresses',
   bano: 'dresses',
+  dormir: 'dresses',
 };
 
 serve(async (req) => {

@@ -345,6 +345,7 @@
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="accesorio">Accesorios</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bolso">Bolsos</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="bano">Baño</button>
+        <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="dormir">Dormir</button>
         <button class="filter-chip" data-filter="categoria" data-view="armario" data-value="deporte">Deporte</button>
       </div>
       <div class="filter-separator" id="sep-subtipo" style="display:none"></div>
@@ -434,6 +435,7 @@
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="accesorio">Accesorios</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="bolso">Bolsos</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="bano">Baño</button>
+              <button class="filter-chip" data-filter="capa" data-view="manual" data-value="dormir">Dormir</button>
               <button class="filter-chip" data-filter="capa" data-view="manual" data-value="deporte">Deporte</button>
             </div>
           </div>
@@ -450,6 +452,7 @@
             <div class="capa-slot" id="slot-falda"><span style="color:var(--muted);font-size:0.82rem">Falda</span></div>
             <div class="capa-slot" id="slot-vestido"><span style="color:var(--muted);font-size:0.82rem">Vestido</span></div>
             <div class="capa-slot" id="slot-bano"><span style="color:var(--muted);font-size:0.82rem">Baño</span></div>
+            <div class="capa-slot" id="slot-dormir"><span style="color:var(--muted);font-size:0.82rem">Ropa de dormir</span></div>
             <div class="capa-slot" id="slot-deporte"><span style="color:var(--muted);font-size:0.82rem">Deporte</span></div>
             <div class="capa-slot" id="slot-zapatos"><span style="color:var(--muted);font-size:0.82rem">Zapatos</span></div>
             <div class="capa-slot" id="slot-bolso"><span style="color:var(--muted);font-size:0.82rem">Bolso</span></div>
@@ -553,6 +556,7 @@
           <option value="zapatos">Zapatos</option>
           <option value="bolso">Bolso</option>
           <option value="bano">Baño</option>
+          <option value="dormir">Ropa de dormir</option>
           <option value="deporte">Deporte</option>
         </select>
       </div>
@@ -757,8 +761,8 @@ let lookIdParaAsignar = null;
 let calFechaSeleccionada = null;
 let looksGeneradosCache = [];
 
-const CAPAS = ['conjunto', 'chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'bano', 'deporte', 'zapatos', 'bolso', 'accesorio'];
-const CAPA_LABELS = { conjunto: 'Conjunto / Traje', chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', bano: 'Baño', deporte: 'Deporte', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
+const CAPAS = ['conjunto', 'chaqueta', 'top', 'pantalon', 'falda', 'vestido', 'bano', 'dormir', 'deporte', 'zapatos', 'bolso', 'accesorio'];
+const CAPA_LABELS = { conjunto: 'Conjunto / Traje', chaqueta: 'Chaqueta', top: 'Top / Camisa', pantalon: 'Pantalón', falda: 'Falda', vestido: 'Vestido', bano: 'Baño', dormir: 'Ropa de dormir', deporte: 'Deporte', zapatos: 'Zapatos', bolso: 'Bolso', accesorio: 'Accesorio' };
 
 const SEMILLA = [
   { nombre: 'Blazer beige', categoria: 'chaqueta', contextos: ['oficina','casual'], temporada: 'todo año', color: 'beige', patron: 'liso', emoji: '🧥' },
@@ -924,7 +928,7 @@ function actualizarFiltrosSubtipo(categoria) {
 const COLOR_LUMINOSIDAD = ['blanco','crema','beige','marfil','nude','rosa claro','lavanda','celeste','amarillo','rosa','coral','naranja','rojo','verde claro','menta','turquesa','azul claro','lila','morado','verde','azul','verde oscuro','azul marino','burdeos','granate','marrón','camel','tostado','gris claro','gris','gris oscuro','negro'];
 
 function ordenarPrendas(prendas) {
-  const catOrder = ['conjunto','chaqueta','top','pantalon','falda','vestido','zapatos','bolso','accesorio','bano','deporte'];
+  const catOrder = ['conjunto','chaqueta','top','pantalon','falda','vestido','zapatos','bolso','accesorio','bano','dormir','deporte'];
   return [...prendas].sort((a, b) => {
     const ca = catOrder.indexOf(a.categoria), cb = catOrder.indexOf(b.categoria);
     if (ca !== cb) return (ca === -1 ? 99 : ca) - (cb === -1 ? 99 : cb);
@@ -1388,7 +1392,7 @@ async function _verPrendasEnAvatar(prendas) {
         prendaUrl: prenda.imagen_url,
         categoria: prenda.categoria,
         descripcion: prenda.nombre + (prenda.largo ? `, vestido ${prenda.largo}` : ''),
-        intimo: prenda.intimo || prenda.categoria === 'bano' || false,
+        intimo: prenda.intimo || prenda.categoria === 'bano' || prenda.categoria === 'dormir' || false,
       }),
     });
     const startData = await startRes.json();
