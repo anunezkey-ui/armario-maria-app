@@ -691,7 +691,7 @@
 <!-- ───── MODAL: NUEVA MALETA ───── -->
 <div class="modal-overlay" id="modal-nueva-maleta">
   <div class="modal" style="max-width:400px">
-    <h2>Nueva Maleta</h2>
+    <h2 id="modal-nueva-maleta-titulo">Nueva Maleta</h2>
     <div class="form-group">
       <label>Nombre de la maleta</label>
       <input type="text" id="nueva-maleta-nombre" placeholder="Ej: Viaje Roma junio" />
@@ -705,7 +705,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-nueva-maleta')">Cancelar</button>
-      <button class="btn btn-primary" onclick="crearMaleta()">Crear</button>
+      <button class="btn btn-primary" id="btn-confirmar-maleta" onclick="crearMaleta()">Crear</button>
     </div>
   </div>
 </div>
@@ -1934,15 +1934,25 @@ async function fusionarConLooks(maletaId) {
   showToast(`Fusionados ${items.length} items del periodo`);
 }
 
-function openModalNuevaMaleta() {
+function _resetModalMaleta() {
+  document.getElementById('modal-nueva-maleta-titulo').textContent = 'Nueva Maleta';
   document.getElementById('nueva-maleta-nombre').value = '';
+  document.getElementById('nueva-maleta-inicio').value = '';
+  document.getElementById('nueva-maleta-fin').value = '';
+  document.getElementById('btn-confirmar-maleta').textContent = 'Crear';
+  document.getElementById('btn-confirmar-maleta').onclick = crearMaleta;
+  maletaDuplicarId = null;
+}
+
+function openModalNuevaMaleta() {
+  _resetModalMaleta();
   maletaPrendaIdPendiente = null;
   openModal('modal-nueva-maleta');
 }
 
 function openModalNuevaMaletaDesde() {
   closeModal('modal-añadir-maleta');
-  document.getElementById('nueva-maleta-nombre').value = '';
+  _resetModalMaleta();
   openModal('modal-nueva-maleta');
 }
 
@@ -2030,17 +2040,35 @@ async function eliminarMaleta(id) {
   showToast('Maleta eliminada');
 }
 
-async function duplicarMaleta(id) {
+let maletaDuplicarId = null;
+
+function duplicarMaleta(id) {
   const original = allMaletas.find(m => m.id === id);
   if (!original) return;
-  const nombre = prompt('Nombre para la nueva maleta:', original.nombre + ' (copia)');
-  if (!nombre || !nombre.trim()) return;
-  const { data: nueva } = await sb.from('maletas').insert({ nombre: nombre.trim() }).select().single();
+  maletaDuplicarId = id;
+  document.getElementById('modal-nueva-maleta-titulo').textContent = 'Duplicar Maleta';
+  document.getElementById('nueva-maleta-nombre').value = original.nombre + ' (copia)';
+  document.getElementById('nueva-maleta-inicio').value = original.fecha_inicio || '';
+  document.getElementById('nueva-maleta-fin').value = original.fecha_fin || '';
+  document.getElementById('btn-confirmar-maleta').textContent = 'Duplicar';
+  document.getElementById('btn-confirmar-maleta').onclick = confirmarDuplicarMaleta;
+  openModal('modal-nueva-maleta');
+}
+
+async function confirmarDuplicarMaleta() {
+  const nombre = document.getElementById('nueva-maleta-nombre').value.trim();
+  if (!nombre) return showToast('Pon un nombre a la maleta', 'error');
+  const inicio = document.getElementById('nueva-maleta-inicio').value || null;
+  const fin = document.getElementById('nueva-maleta-fin').value || null;
+  const original = allMaletas.find(m => m.id === maletaDuplicarId);
+  const { data: nueva } = await sb.from('maletas').insert({ nombre, fecha_inicio: inicio, fecha_fin: fin }).select().single();
   if (nueva && original.prendas.length) {
     await sb.from('maleta_items').insert(original.prendas.map(p => ({ maleta_id: nueva.id, prenda_id: p.id })));
   }
+  closeModal('modal-nueva-maleta');
+  maletaDuplicarId = null;
   await loadMaletas();
-  showToast(`Maleta "${nombre.trim()}" creada`);
+  showToast(`Maleta "${nombre}" creada ✓`, 'success');
 }
 
 let toastTimer;
