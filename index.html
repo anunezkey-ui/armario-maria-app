@@ -47,8 +47,9 @@
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* FILTERS */
-    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-    .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; align-items: flex-start; }
+    .filter-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; width: 100%; }
+    .filter-separator { display: none; }
     .filter-chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--white); font-size: 0.78rem; font-weight: 500; cursor: pointer; color: var(--muted); transition: all 0.2s; }
     .filter-chip.active { background: var(--sage); color: var(--white); border-color: var(--sage); }
     .filter-chip:hover:not(.active) { color: var(--carbon); }
