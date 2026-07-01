@@ -1228,6 +1228,7 @@ function lookCardHTML(l) {
     ${l.contextos?.length ? `<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">${l.contextos.join(' · ')}</div>` : ''}
     <div class="look-card-footer">
       <button class="btn btn-accent btn-sm" onclick="abrirAsignarDia(${l.id}, '${escapeStr(l.nombre)}')">📅 Asignar a día</button>
+      <button class="btn btn-secondary btn-sm" onclick="openModalAñadirLookAMaleta(${l.id}, '${escapeStr(l.nombre)}')">🧳 Añadir a maleta</button>
       <button class="btn btn-primary btn-sm" onclick="verLookEnAvatar(${l.id})">📸 Ver en avatar</button>
       <button class="btn btn-danger btn-sm" onclick="eliminarLook(${l.id})">🗑 Eliminar</button>
     </div>
@@ -1945,6 +1946,33 @@ async function crearMaleta() {
   }
   await loadMaletas();
   showToast(`Maleta "${nombre}" creada`);
+}
+
+let maletaLookIdPendiente = null;
+
+function openModalAñadirLookAMaleta(lookId, nombre) {
+  maletaLookIdPendiente = lookId;
+  maletaPrendaIdPendiente = null;
+  document.getElementById('modal-maleta-prenda-titulo').textContent = `Añadir look "${nombre}" a maleta`;
+  const lista = document.getElementById('maleta-selector-lista');
+  if (!allMaletas.length) {
+    lista.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">No hay maletas todavía.</p>';
+  } else {
+    lista.innerHTML = allMaletas.map(m => `
+      <button class="btn btn-secondary" style="justify-content:flex-start;gap:10px" onclick="añadirLookAMaletaYCerrar(${m.id})">
+        🧳 ${m.nombre} <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">${m.prendas.length} prendas</span>
+      </button>`).join('');
+  }
+  openModal('modal-añadir-maleta');
+}
+
+async function añadirLookAMaletaYCerrar(maletaId) {
+  closeModal('modal-añadir-maleta');
+  const look = allLooks.find(l => l.id === maletaLookIdPendiente);
+  if (!look?.prendas?.length) return showToast('Este look no tiene prendas');
+  await Promise.all(look.prendas.map(p => añadirPrendaAMaleta(maletaId, p.id)));
+  const maleta = allMaletas.find(m => m.id === maletaId);
+  showToast(`${look.prendas.length} prendas añadidas a "${maleta?.nombre}" ✓`, 'success');
 }
 
 function openModalAñadirMaleta(prendaId) {
