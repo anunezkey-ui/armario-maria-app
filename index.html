@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Armario María</title>
+  <title>Vestidor María</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -310,9 +310,9 @@
 <body>
 
 <header>
-  <h1>Armario María ✨</h1>
+  <h1>Vestidor María ✨</h1>
   <nav>
-    <button class="active" onclick="showView('armario', this)">👗 Armario</button>
+    <button class="active" onclick="showView('armario', this)">👗 Vestidor</button>
     <button onclick="showView('looks', this)">✨ Looks</button>
     <button onclick="showView('calendario', this)">📅 Calendario</button>
     <button onclick="showView('maletas', this)">🧳 Maletas</button>
@@ -327,7 +327,7 @@
     <div class="armario-hero">
       <div class="hero-left">
         <div class="hero-avatar"></div>
-        <div class="hero-title">Mi Armario</div>
+        <div class="hero-title">Mi Vestidor</div>
       </div>
       <div class="hero-sub">Outfits · Looks · Estilo</div>
     </div>
@@ -380,7 +380,7 @@
       </div>
     </div>
     <div id="grid-prendas" class="grid-prendas">
-      <div class="loading"><div class="spinner"></div> Cargando armario…</div>
+      <div class="loading"><div class="spinner"></div> Cargando vestidor…</div>
     </div>
   </div>
 
@@ -487,7 +487,7 @@
     <div id="modo-referencia" style="display:none">
       <div class="generator-panel">
         <h3>Look desde foto de referencia</h3>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Sube una foto de inspiración y la app buscará en tu armario las prendas más parecidas.</p>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Sube una foto de inspiración y la app buscará en tu vestidor las prendas más parecidas.</p>
         <div class="file-upload-area" id="ref-upload-area" onclick="document.getElementById('ref-foto-input').click()">
           <input type="file" id="ref-foto-input" accept="image/*" style="display:none" onchange="onRefFotoSelected(event)" />
           <div id="ref-upload-preview">
@@ -495,7 +495,7 @@
             <div style="font-size:0.85rem;color:var(--muted)">Toca para subir foto de inspiración</div>
           </div>
         </div>
-        <button class="btn btn-primary" style="margin-top:16px;width:100%" id="btn-analizar-ref" onclick="analizarReferencia()" disabled>✨ Analizar y buscar en armario</button>
+        <button class="btn btn-primary" style="margin-top:16px;width:100%" id="btn-analizar-ref" onclick="analizarReferencia()" disabled>✨ Analizar y buscar en vestidor</button>
       </div>
       <div id="ref-resultados"></div>
     </div>
@@ -555,17 +555,17 @@
   <div class="modal" style="max-width:560px">
     <h2>❓ Guía de uso</h2>
     <div style="max-height:60vh;overflow-y:auto;font-size:0.88rem;line-height:1.6;padding-right:4px">
-      <p style="font-weight:600;margin-bottom:4px">👗 Armario</p>
+      <p style="font-weight:600;margin-bottom:4px">👗 Vestidor</p>
       <p style="margin-bottom:14px;color:var(--muted)">Sube tus prendas con foto (el fondo se recorta automático). Rellena categoría, contextos, temporada, color y patrón para que looks y filtros funcionen bien. Puedes editar (✏️) o eliminar (🗑) cualquier prenda luego, y añadirla directamente a una maleta (🧳).</p>
 
       <p style="font-weight:600;margin-bottom:4px">✨ Looks</p>
-      <p style="margin-bottom:14px;color:var(--muted)">Genera un look en modo automático, móntalo tú misma prenda a prenda (modo manual), o sube una foto de inspiración para que la app busque prendas parecidas en tu armario. Puedes editar cualquier look guardado tocando ✏️ para cambiar o quitar capas concretas. El botón 📸 aplica el look sobre tu avatar (o el sintético en baño/dormir).</p>
+      <p style="margin-bottom:14px;color:var(--muted)">Genera un look en modo automático, móntalo tú misma prenda a prenda (modo manual), o sube una foto de inspiración para que la app busque prendas parecidas en tu vestidor. Puedes editar cualquier look guardado tocando ✏️ para cambiar o quitar capas concretas. El botón 📸 aplica el look sobre tu avatar (o el sintético en baño/dormir).</p>
 
       <p style="font-weight:600;margin-bottom:4px">📅 Calendario</p>
       <p style="margin-bottom:14px;color:var(--muted)">Asigna looks guardados a un día concreto desde el botón "Asignar a día". Si repites un look de oficina en menos de 7 días, la app te avisa.</p>
 
       <p style="font-weight:600;margin-bottom:4px">🧳 Maletas</p>
-      <p style="margin-bottom:14px;color:var(--muted)">Crea una maleta manualmente, añade prendas sueltas desde el armario o looks enteros desde "Añadir a maleta". Si ya tienes looks asignados en el calendario para un rango de fechas, usa "Lista desde mis looks" para generar la lista automáticamente. "Duplicar" crea una copia editable de una maleta existente. La sección de ropa interior (sujetadores, bragas, calcetines, medias) es un checklist aparte con cantidades ajustables.</p>
+      <p style="margin-bottom:14px;color:var(--muted)">Crea una maleta manualmente, añade prendas sueltas desde el vestidor o looks enteros desde "Añadir a maleta". Si ya tienes looks asignados en el calendario para un rango de fechas, usa "Lista desde mis looks" para generar la lista automáticamente. "Duplicar" crea una copia editable de una maleta existente. La sección de ropa interior (sujetadores, bragas, calcetines, medias) es un checklist aparte con cantidades ajustables.</p>
 
       <p style="font-weight:600;margin-bottom:4px">📸 Ver en avatar</p>
       <p style="margin-bottom:0;color:var(--muted)">Disponible desde un look manual, generado o guardado. Tarda unos segundos en procesar (IA de prueba virtual). Las prendas de baño y dormir usan un avatar sintético por privacidad.</p>
@@ -1372,7 +1372,7 @@ function abrirCambiarCapa(cat) {
   document.getElementById('modal-cambiar-titulo').textContent = `Cambiar ${CAPA_LABELS[cat]}`;
   const grid = document.getElementById('modal-cambiar-grid');
   if (!prendas.length) {
-    grid.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;grid-column:1/-1">No hay prendas de esta categoría en tu armario.</p>';
+    grid.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;grid-column:1/-1">No hay prendas de esta categoría en tu vestidor.</p>';
   } else {
     grid.innerHTML = prendas.map(p => `
       <div onclick="seleccionarCapa('${cat}', ${p.id})" style="cursor:pointer;border-radius:10px;border:2px solid ${lookBuilder[cat]?.id === p.id ? 'var(--sage)' : 'var(--border)'};padding:10px;background:var(--white);text-align:center;transition:border 0.15s">
@@ -1850,7 +1850,7 @@ async function analizarReferencia() {
     const { prendas: detectadas, error } = await res.json();
     if (error) throw new Error(error);
 
-    // Para cada prenda detectada buscar la mejor coincidencia en el armario
+    // Para cada prenda detectada buscar la mejor coincidencia en el vestidor
     const matches = detectadas.map(d => {
       const candidatas = allPrendas.filter(p => p.categoria === d.categoria);
       if (!candidatas.length) return null;
@@ -1863,10 +1863,10 @@ async function analizarReferencia() {
     }).filter(Boolean);
 
     if (!matches.length) {
-      resultados.innerHTML = '<div class="empty-state"><p>No se encontraron prendas similares en tu armario.</p></div>';
+      resultados.innerHTML = '<div class="empty-state"><p>No se encontraron prendas similares en tu vestidor.</p></div>';
     } else {
       resultados.innerHTML = `
-        <h3 style="font-family:'Playfair Display',serif;margin:24px 0 16px">Prendas encontradas en tu armario</h3>
+        <h3 style="font-family:'Playfair Display',serif;margin:24px 0 16px">Prendas encontradas en tu vestidor</h3>
         <div style="display:flex;flex-direction:column;gap:16px">
           ${matches.map(m => `
             <div style="background:var(--white);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
@@ -1890,7 +1890,7 @@ async function analizarReferencia() {
     resultados.innerHTML = `<div class="empty-state"><p>Error al analizar: ${e.message}</p></div>`;
   } finally {
     btn.disabled = false;
-    btn.textContent = '✨ Analizar y buscar en armario';
+    btn.textContent = '✨ Analizar y buscar en vestidor';
   }
 }
 
@@ -1943,7 +1943,7 @@ function renderMaletas() {
   const container = document.getElementById('lista-maletas');
   if (!container) return;
   if (!allMaletas.length) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">🧳</div><p>Todavía no hay maletas. Crea una o añade prendas desde el armario.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="icon">🧳</div><p>Todavía no hay maletas. Crea una o añade prendas desde el vestidor.</p></div>';
     return;
   }
   container.innerHTML = allMaletas.map(m => {
@@ -1977,7 +1977,7 @@ function renderMaletas() {
                 <span style="font-size:0.7rem;line-height:1.2;word-break:break-word">${p.nombre}</span>
               </div>`).join('')}
             </div>`
-          : '<p class="maleta-empty">Sin prendas aún — añade desde el Armario (🧳 en cada prenda) o desde un Look guardado (🧳 Añadir a maleta)</p>'
+          : '<p class="maleta-empty">Sin prendas aún — añade desde el Vestidor (🧳 en cada prenda) o desde un Look guardado (🧳 Añadir a maleta)</p>'
         }
         <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">${prendas.length} prenda${prendas.length !== 1 ? 's' : ''}</div>
       </div>
